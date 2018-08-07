@@ -1,5 +1,5 @@
-# DTTriggerRateMonitoringWithML
-Monitoring the DT trigger rates using ML/DL techniques
+# L1MTriggerRateMonitoringWithML
+Monitoring the L1Muon trigger rates using ML/DL techniques
 
 In order to extract the instantaneous luminosity, please, use the brilcalc tool described here:
 
