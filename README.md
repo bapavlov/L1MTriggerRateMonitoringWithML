@@ -8,8 +8,10 @@ https://cms-service-lumi.web.cern.ch/cms-service-lumi/brilwsdoc.html
 and the following command to have instantaneous luminosity vs. lumisections:
 
 ```
-brilcalc lumi --byls -u hz/ub -r 306777 -o lumi.csv --output-style csv
+brilcalc lumi --byls -u hz/ub -r 306777 -o lumi.csv --output-style csv --type hfet
 ```
+
+N.B.: Possible luminometers are hfoc, hfet, bcm1f, bcm1fsi, bcm1futca, pltzero, dt, pxl.
 
 In order to check the 2018 certified runs, please, use:
 
