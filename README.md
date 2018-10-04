@@ -13,10 +13,12 @@ brilcalc lumi --byls -u hz/ub -r 306777 -o lumi.csv --output-style csv --type hf
 
 N.B.: Possible luminometers are hfoc, hfet, bcm1f, bcm1fsi, bcm1futca, pltzero, dt, pxl.
 
-In order to check the 2018 certified runs, please, use:
+In order to check the 2017/2018 certified runs, please, use:
 
 ```
-brilcalc lumi -i /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions18/13TeV/PromptReco/Cert_314472-321461_13TeV_PromptReco_Collisions18_JSON.txt -u /pb >& runs2018.txt
+brilcalc lumi -i /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions17/13TeV/PromptReco/Cert_294927-306462_13TeV_PromptReco_Collisions17_JSON.txt -u /pb -o runs_2017.csv --output-style csv
+
+brilcalc lumi -i /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions18/13TeV/PromptReco/Cert_314472-321461_13TeV_PromptReco_Collisions18_JSON.txt -u /pb -o runs_2017.csv --output-style csv
 ```
 
 To collect the informations about the trigger rates, please, use the python script in the "rates" folder:
