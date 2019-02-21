@@ -17,6 +17,7 @@ import pandas as pd
 import tensorflow as tf
 
 import matplotlib
+matplotlib.use('PS')   # generate postscript output by default
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from mpl_toolkits.axes_grid1 import make_axes_locatable
@@ -180,7 +181,7 @@ for i in runs:
     start_ls =  start_ls.reset_index(drop=True)
     end_ls =  end_ls.reset_index(drop=True)
     nLS = int(start_ls.iloc[-1]) - int(start_ls.iloc[0]) + 1
-    print i, start.iloc[0], start.iloc[-1], start_ls.iloc[0], start_ls.iloc[-1], nLS
+    print(i, start.iloc[0], start.iloc[-1], start_ls.iloc[0], start_ls.iloc[-1], nLS)
     boundaries = boundaries.append({"run": i, "start": start.iloc[0], "end": start.iloc[-1], 
                                    "ls_start": start_ls.iloc[0], "ls_end": start_ls.iloc[-1],\
                                     "nLS": nLS}, ignore_index = True)
@@ -204,7 +205,7 @@ int_lumi2.index = pd.RangeIndex(len(int_lumi2.index))
 # In[14]:
 
 
-print len(int_lumi2.index)
+print(len(int_lumi2.index))
 
 
 # Filling end time column:
@@ -252,7 +253,7 @@ def apply_lumimask(run, df, df_lm):
     temp = df.copy()
     mat = df_lm[df_lm.run == run].ls.iloc[0]
     for i in range(0, np.size(mat, 0)):
-        print "Applying lumi mask:", mat[i]
+        print("Applying lumi mask:", mat[i])
         ls_i = int(mat[i][0])
         ls_f = int(mat[i][1])
         temp = temp[(temp.ls_start >= ls_i) & (temp.ls_start <= ls_f)]
@@ -403,12 +404,12 @@ df_rates_backup = df_rates.copy()
 
 time0 = boundaries["start"].iloc[0]
 timeF = boundaries["end"].iloc[-1]
-print time0, timeF
+print(time0, timeF)
 #print df_rates[(df_rates.time >= time0) & (df_rates.time <= timeF)]
 df_rates = df_rates[(df_rates.time >= time0) & (df_rates.time <= timeF)]
 rule = df_rates.duplicated(subset=["time"])
 count = (rule == False).sum()
-print "Duplicates:", rule.sum()
+print("Duplicates:", rule.sum())
 df_rates_noduplicates = df_rates[rule == False]
 #print df_rates_noduplicates
 
@@ -416,7 +417,7 @@ df_rates_noduplicates = df_rates[rule == False]
 # In[32]:
 
 
-print len(df_rates_noduplicates)
+print(len(df_rates_noduplicates))
 
 
 # Assigning the LS and the inst. lumi. to the measurements for the selected board:
@@ -439,7 +440,7 @@ def assignLS(df1, df2, boundaries):
             if((time1 >= df2["time"].loc[i]) & (time1 < df2["time_end"].loc[i])):
                 #print time1, df2["time"].loc[i], df2["time_end"].loc[i]
                 if(j%1000 == 0): 
-                    print j
+                    print(j)
                 j = j + 1
                 ls = df2["ls_start"].loc[i]
                 lumi = df2["delivered"].loc[i]
@@ -459,7 +460,7 @@ df_rates_noduplicates = temp
 
 
 df_rates_noduplicates = df_rates_noduplicates[df_rates_noduplicates["ls"] > 0]
-print len(df_rates_noduplicates)
+print(len(df_rates_noduplicates))
 
 
 # Save in a csv file:
@@ -488,7 +489,7 @@ def assignLS_ext(df1, df2):
     indexes = []
     for index in df2.index:
         if index%10000 == 0:
-            print index
+            print(index)
         time = df2["time"].loc[index]
         ls = df2["ls"].loc[index]
         lumi = df2["lumi"].loc[index]
@@ -533,7 +534,7 @@ df_rates = df_rates[df_rates.ls > 0]
 
 df_boards = df_rates.copy()
 df_boards = df_boards.groupby(['board']).size().reset_index(name='counts')
-print len(df_boards)
+print(len(df_boards))
 #print df_boards
 
 
@@ -621,7 +622,7 @@ for i in list(df_rates):
 # In[48]:
 
 
-print df_rates.isnull().values.any()
+print(df_rates.isnull().values.any())
 null_columns=df_rates.columns[df_rates.isnull().any()]
 print(df_rates[df_rates.isnull().any(axis=1)][null_columns].head())
 #df_rates = df_rates.fillna(0)
@@ -646,7 +647,7 @@ print(df_rates[df_rates.isnull().any(axis=1)][null_columns].head())
 # In[51]:
 
 
-print len(df_rates)
+print(len(df_rates))
 
 
 # Uncomment to check just one case case:
@@ -694,7 +695,7 @@ plot_rate_vs_ls(df_rates, 319579, "lumi", "DT5", "YB+1_S4", 0, "errDT5",        
 # In[54]:
 
 
-print len(df_rates)
+print(len(df_rates))
 #Uncomment to include RPC
 #algos = ['RPC1', 'RPC2', 'RPC3', 'RPC4', 'DT1', 'DT2', 'DT3', 'DT4', 'DT5']
 algos = ['DT1', 'DT2', 'DT3', 'DT4', 'DT5']
@@ -719,7 +720,7 @@ for i in algos:
     #print temp.columns
     df_rates_new_2 = pd.concat([df_rates_new_2, temp], ignore_index=True)
 
-print len(df_rates_new_2)
+print(len(df_rates_new_2))
 
 
 # Adding the lumi/rate ratio:
@@ -731,33 +732,33 @@ df_rates_new_2["CS"] = -1
 df_rates_new_2["errCS"] = -1
 
 df_rates_new_2["CS"] = df_rates_new_2["rate"]/df_rates_new_2["lumi"]
-print "Number of NaN's in CS before:"
-print len(df_rates_new_2["CS"][df_rates_new_2["CS"].isnull() == True])
-print "Number of Inf's in CS before:"
-print len(df_rates_new_2["CS"][np.isinf(df_rates_new_2["CS"])])
+print("Number of NaN's in CS before:")
+print(len(df_rates_new_2["CS"][df_rates_new_2["CS"].isnull() == True]))
+print("Number of Inf's in CS before:")
+print(len(df_rates_new_2["CS"][np.isinf(df_rates_new_2["CS"])]))
 
 df_rates_new_2["CS"] = df_rates_new_2["CS"].replace([np.inf, -np.inf], np.nan)
 df_rates_new_2["CS"] = df_rates_new_2["CS"].fillna(-1)
 
-print "Number of NaN's in CS after:"
-print len(df_rates_new_2["CS"][df_rates_new_2["CS"].isnull() == True])
-print "Number of Inf's in CS after:"
-print len(df_rates_new_2["CS"][np.isinf(df_rates_new_2["CS"])])
+print("Number of NaN's in CS after:")
+print(len(df_rates_new_2["CS"][df_rates_new_2["CS"].isnull() == True]))
+print("Number of Inf's in CS after:")
+print(len(df_rates_new_2["CS"][np.isinf(df_rates_new_2["CS"])]))
 
 df_rates_new_2["errCS"] = (1/df_rates_new_2["lumi"])*np.sqrt(df_rates_new_2["err"]**2 + df_rates_new_2["CS"]**2 * df_rates_new_2["errLumi"]**2)
 
-print "Number of NaN's in errCS before:"
-print len(df_rates_new_2["errCS"][df_rates_new_2["errCS"].isnull() == True])
-print "Number of Inf's in errCS before:"
-print len(df_rates_new_2["errCS"][np.isinf(df_rates_new_2["errCS"])])
+print("Number of NaN's in errCS before:")
+print(len(df_rates_new_2["errCS"][df_rates_new_2["errCS"].isnull() == True]))
+print("Number of Inf's in errCS before:")
+print(len(df_rates_new_2["errCS"][np.isinf(df_rates_new_2["errCS"])]))
 
 df_rates_new_2["errCS"] = df_rates_new_2["errCS"].replace([np.inf, -np.inf], np.nan)
 df_rates_new_2["errCS"] = df_rates_new_2["errCS"].fillna(-1)
 
-print "Number of NaN's in errCS after:"
-print len(df_rates_new_2["errCS"][df_rates_new_2["errCS"].isnull() == True])
-print "Number of Inf's in errCS after:"
-print len(df_rates_new_2["errCS"][np.isinf(df_rates_new_2["errCS"])])
+print("Number of NaN's in errCS after:")
+print(len(df_rates_new_2["errCS"][df_rates_new_2["errCS"].isnull() == True]))
+print("Number of Inf's in errCS after:")
+print(len(df_rates_new_2["errCS"][np.isinf(df_rates_new_2["errCS"])]))
 
 
 # In[56]:
@@ -910,7 +911,7 @@ df_rates_new = df_rates_new_2.copy()
 # In[64]:
 
 
-print df_rates_new_2["content"].iloc[1]
+print(df_rates_new_2["content"].iloc[1])
 
 
 # In[65]:
@@ -930,7 +931,7 @@ df_rates_new_2["content"] = df_rates_new_2["content"].apply(change_data)
 # In[66]:
 
 
-print df_rates_new_2["content"].iloc[1]
+print(df_rates_new_2["content"].iloc[1])
 
 
 # In[67]:
@@ -948,19 +949,19 @@ normalies = anomalies.copy()
 # In[69]:
 
 
-print len(normalies), len(anomalies)
+print(len(normalies), len(anomalies))
 
 
 # In[70]:
 
 
 rule = (normalies["wheel"] == -1) & (normalies["sector"] == 3) & (normalies["station"] == 3) 
-print "Normal chimney:"
-print normalies[rule]["content"].iloc[0]
+print("Normal chimney:")
+print(normalies[rule]["content"].iloc[0])
 
 rule = (normalies["wheel"] == 1) & (normalies["sector"] == 4) & (normalies["station"] == 3)
-print "Anomalous chimney:"
-print normalies[rule]["content"].iloc[0]
+print("Anomalous chimney:")
+print(normalies[rule]["content"].iloc[0])
 
 
 # In[71]:
@@ -1039,24 +1040,24 @@ assignRate(normalies)
 
 
 rule = (normalies["wheel"] == -1) & (normalies["sector"] == 3) & (normalies["station"] == 3)
-print "Normal chimney:"
-print normalies[rule]["content"].iloc[0]
+print("Normal chimney:")
+print(normalies[rule]["content"].iloc[0])
 
 rule = (normalies["wheel"] == 1) & (normalies["sector"] == 4) & (normalies["station"] == 3)
-print "Anomalous chimney:"
-print normalies[rule]["content"].iloc[0]
+print("Anomalous chimney:")
+print(normalies[rule]["content"].iloc[0])
 
 
 # In[75]:
 
 
 rule = (anomalies["wheel"] == -1) & (anomalies["sector"] == 3) & (anomalies["station"] == 3)
-print "Normal chimney:"
-print anomalies[rule]["content"].iloc[0]
+print("Normal chimney:")
+print(anomalies[rule]["content"].iloc[0])
 
 rule = (anomalies["wheel"] == 1) & (anomalies["sector"] == 4) & (anomalies["station"] == 3)
-print "Anomalous chimney:"
-print anomalies[rule]["content"].iloc[0]
+print("Anomalous chimney:")
+print(anomalies[rule]["content"].iloc[0])
 
 
 # In[76]:
@@ -1204,7 +1205,7 @@ cw = class_weight.compute_class_weight("balanced",
                                        np.unique(np.argmax(train_y, axis=1)),
                                        np.argmax(train_y, axis=1))
 cw = {0: cw[0], 1: cw[1]}
-print cw
+print(cw)
 
 
 # ## Simple test
@@ -1238,8 +1239,8 @@ cross_sections = extract_cs(normalies_train[normalies_train.lumi > 10000], cross
 # In[87]:
 
 
-print cross_sections[(cross_sections.wheel == +2) & (cross_sections.sector == 10) &                     (cross_sections.station == 3)]["CS"]
-print cross_sections[(cross_sections.wheel == +2) & (cross_sections.sector == 10) &                     (cross_sections.station == 4)]["CS"]
+print(cross_sections[(cross_sections.wheel == +2) & (cross_sections.sector == 10) &                     (cross_sections.station == 3)]["CS"])
+print(cross_sections[(cross_sections.wheel == +2) & (cross_sections.sector == 10) &                     (cross_sections.station == 4)]["CS"])
 
 
 # In[88]:
@@ -1454,8 +1455,8 @@ def plot_scatter(df, run, wheel, ls_min, ls_max):
         temp = temp[(temp["averageLS"] >= ls_min) & (temp["averageLS"] <= ls_max)]
         ls_s = " ["+str(ls_min)+", "+str(ls_max)+"]"
     mat = get_matrix(temp)
-    print mat
-    print mat.sum()
+    print(mat)
+    print(mat.sum())
 
     plt.figure()
     
@@ -1522,7 +1523,7 @@ def plotFpVsLs(run, wheel, sector, station, title, df, algo, threshold, log, bou
 
 means = []
 for i in range(1, 300, 10):
-    print i
+    print(i)
     k_means = cluster.KMeans(n_clusters=i)
     k_means.fit(np.vstack(normalies_train["content_scaled"].values))
     means.append([i, k_means.inertia_])
@@ -1532,7 +1533,7 @@ for i in range(1, 300, 10):
 
 
 for i in range(300, 500, 10):
-    print i
+    print(i)
     k_means = cluster.KMeans(n_clusters=i)
     k_means.fit(np.vstack(normalies_train["content_scaled"].values))
     means.append([i, k_means.inertia_])
@@ -1542,7 +1543,7 @@ for i in range(300, 500, 10):
 
 
 for i in range(500, 1000, 100):
-    print i
+    print(i)
     k_means = cluster.KMeans(n_clusters=i)
     k_means.fit(np.vstack(normalies_train["content_scaled"].values))
     means.append([i, k_means.inertia_])
@@ -1552,7 +1553,7 @@ for i in range(500, 1000, 100):
 
 
 for i in range(1000, 2000, 200):
-    print i
+    print(i)
     k_means = cluster.KMeans(n_clusters=i)
     k_means.fit(np.vstack(normalies_train["content_scaled"].values))
     means.append([i, k_means.inertia_])
@@ -1562,7 +1563,7 @@ for i in range(1000, 2000, 200):
 
 
 for i in range(2, 10, 1):
-    print i
+    print(i)
     k_means = cluster.KMeans(n_clusters=i)
     k_means.fit(np.vstack(normalies_train["content_scaled"].values))
     means.append([i, k_means.inertia_])
@@ -1829,8 +1830,8 @@ scale_cs_for_sf(factors)
 # In[124]:
 
 
-print factors[(factors.wheel == +1) & (factors.sector == 4) & (factors.station == 3)]
-print factors[(factors.wheel == +2) & (factors.sector == 10) & (factors.station == 3)]
+print(factors[(factors.wheel == +1) & (factors.sector == 4) & (factors.station == 3)])
+print(factors[(factors.wheel == +2) & (factors.sector == 10) & (factors.station == 3)])
 
 
 # In[125]:
@@ -1917,10 +1918,10 @@ plot_scatter_2(layers_test[layers_test.run == 319579], "CS_red", +2)
 # In[130]:
 
 
-print layers_train["content_red"].iloc[1]
-print layers_train["content_red_scaled"].iloc[1]
-print layers_test["content_red"].iloc[1]
-print layers_test["content_red_scaled"].iloc[1]
+print(layers_train["content_red"].iloc[1])
+print(layers_train["content_red_scaled"].iloc[1])
+print(layers_test["content_red"].iloc[1])
+print(layers_test["content_red_scaled"].iloc[1])
 
 
 # In[131]:
