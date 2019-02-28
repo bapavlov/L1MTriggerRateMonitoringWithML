@@ -16,6 +16,7 @@ import pandas as pd
 import tensorflow as tf
 
 import matplotlib
+matplotlib.use('PDF')
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from mpl_toolkits.axes_grid1 import make_axes_locatable
@@ -58,11 +59,21 @@ matplotlib.rcParams["figure.titlesize"] = 16
 matplotlib.rcParams["axes.labelsize"] = 14
 matplotlib.rcParams["legend.fontsize"] = 14
 
+def save_plot(plot):
+    save_plot.counter +=1
+    plot.savefig(str(save_plot.counter))
+    plot.show()
+save_plot.counter = 0
+
 
 # In[51]:
 
+with open('run.txt') as run_config:
+    run_to_process = int(next(run_config))
 
-runs = [306125, 319579, 321312]
+print("Processing run:\t",   run_to_process)
+runs = [int(run_to_process), 319579, 321312]
+#runs = [306125, 319579, 321312]
 lumi_directory = data_directory = "./lumi"
 rates_directory = "./rates"
 
@@ -77,7 +88,7 @@ rates_directory = "./rates"
 df_rates = pd.DataFrame()
 int_lumi2 = pd.DataFrame()
 for run in runs:
-    print("Loading %s" % run)
+    print(("Loading %s" % run))
     path = "%s/lumi_%s.csv" % (lumi_directory, run)
     int_lumi2 = int_lumi2.append(pd.read_csv(path,
         names=["runfill", "ls", "time", "beamstatus", "energy", "delivered",\
@@ -163,7 +174,7 @@ for i in runs:
     start_ls =  start_ls.reset_index(drop=True)
     end_ls =  end_ls.reset_index(drop=True)
     nLS = int(start_ls.iloc[-1]) - int(start_ls.iloc[0]) + 1
-    print i, start.iloc[0], start.iloc[-1], start_ls.iloc[0], start_ls.iloc[-1], nLS
+    print(i, start.iloc[0], start.iloc[-1], start_ls.iloc[0], start_ls.iloc[-1], nLS)
     boundaries = boundaries.append({"run": i, "start": start.iloc[0], "end": start.iloc[-1], 
                                    "ls_start": start_ls.iloc[0], "ls_end": start_ls.iloc[-1], "nLS": nLS}, 
                                    ignore_index = True)
@@ -180,7 +191,7 @@ int_lumi2.index = pd.RangeIndex(len(int_lumi2.index))
 # In[60]:
 
 
-print len(int_lumi2.index)
+print(len(int_lumi2.index))
 
 
 # Filling end time column:
@@ -234,7 +245,7 @@ def plot_inst_lumi(x_val, y_val, z_val, title):
     plt.plot(x_val, z_val, 'bo-')
     plt.title(title)
     plt.legend(loc="best")
-    plt.show();
+    save_plot(plt);
 
 
 # In[64]:
@@ -250,9 +261,9 @@ plot_inst_lumi(int_lumi2[int_lumi2["run"] == 321312]["time"],
 # In[65]:
 
 
-plot_inst_lumi(int_lumi2[int_lumi2["run"] == 306125]["time"], 
-               int_lumi2[int_lumi2["run"] == 306125]["delivered"], 
-               int_lumi2[int_lumi2["run"] == 306125]["recorded"], 
+plot_inst_lumi(int_lumi2[int_lumi2["run"] == int(run_to_process)]["time"], 
+               int_lumi2[int_lumi2["run"] == int(run_to_process)]["delivered"], 
+               int_lumi2[int_lumi2["run"] == int(run_to_process)]["recorded"], 
                ("Instantaneous Luminosity for Run / Fill: %s / %s" % 
                (boundaries["run"].iloc[2], int_lumi2["fill"].iloc[2])))
 
@@ -330,7 +341,7 @@ def plot_rate_vs_time(df, x_val, y_val, z_val, title):
     plt.plot(df_temp[x_val], df_temp[y_val], 'ro-')
     plt.title(title)
     plt.legend(loc="best")
-    plt.show();
+    save_plot(plt);
 
 plot_rate_vs_time(df_rates[df_rates.run == 321312], "time", "DT1",                  "YB+1_S4", "Rates for Runs / Fill / Board: %s / %s / %s" %                   ("321312", int_lumi2["fill"].iloc[2], "YB+1_S4"))
 
@@ -358,12 +369,12 @@ df_rates_backup = df_rates.copy()
 
 time0 = boundaries["start"].iloc[0]
 timeF = boundaries["end"].iloc[-1]
-print time0, timeF
+print(time0, timeF)
 #print df_rates[(df_rates.time >= time0) & (df_rates.time <= timeF)]
-df_rates = df_rates[(df_rates.time >= time0) & (df_rates.time <= timeF)]
+#df_rates = df_rates[(df_rates.time >= time0) & (df_rates.time <= timeF)]
 rule = df_rates.duplicated(subset=["time"])
 count = (rule == False).sum()
-print "Duplicates:", rule.sum()
+print("Duplicates:", rule.sum())
 df_rates_noduplicates = df_rates[rule == False]
 #print df_rates_noduplicates
 
@@ -371,7 +382,7 @@ df_rates_noduplicates = df_rates[rule == False]
 # In[75]:
 
 
-print len(df_rates_noduplicates)
+print(len(df_rates_noduplicates))
 
 
 # Assigning the LS and the inst. lumi. to the measurements for the selected board:
@@ -394,7 +405,7 @@ def assignLS(df1, df2, boundaries):
             if((time1 >= df2["time"].loc[i]) & (time1 < df2["time_end"].loc[i])):
                 #print time1, df2["time"].loc[i], df2["time_end"].loc[i]
                 if(j%1000 == 0): 
-                    print j
+                    print(j)
                 j = j + 1
                 ls = df2["ls_start"].loc[i]
                 lumi = df2["delivered"].loc[i]
@@ -414,7 +425,7 @@ df_rates_noduplicates = temp
 
 
 df_rates_noduplicates = df_rates_noduplicates[df_rates_noduplicates["ls"] > 0]
-print len(df_rates_noduplicates)
+print(len(df_rates_noduplicates))
 
 
 # Save in a csv file:
@@ -443,7 +454,7 @@ def assignLS_ext(df1, df2):
     indexes = []
     for index in df2.index:
         if index%10000 == 0:
-            print index
+            print(index)
         time = df2["time"].loc[index]
         ls = df2["ls"].loc[index]
         lumi = df2["lumi"].loc[index]
@@ -490,7 +501,7 @@ df_rates = df_rates[df_rates.ls > 0]
 
 df_boards = df_rates.copy()
 df_boards = df_boards.groupby(['board']).size().reset_index(name='counts')
-print len(df_boards)
+print(len(df_boards))
 #print df_boards
 
 
@@ -566,11 +577,11 @@ for i in list(df_rates):
 # In[89]:
 
 
-print df_rates.isnull().values.any()
+print(df_rates.isnull().values.any())
 null_columns=df_rates.columns[df_rates.isnull().any()]
-print(df_rates[df_rates.isnull().any(axis=1)][null_columns].head())
+print((df_rates[df_rates.isnull().any(axis=1)][null_columns].head()))
 df_rates = df_rates.fillna(0)
-print(df_rates[df_rates.isnull().any(axis=1)][null_columns].head())
+print((df_rates[df_rates.isnull().any(axis=1)][null_columns].head()))
 
 
 # In[90]:
@@ -591,7 +602,7 @@ print(df_rates[df_rates.isnull().any(axis=1)][null_columns].head())
 # In[92]:
 
 
-print len(df_rates)
+print(len(df_rates))
 
 
 # Uncomment to check just one case:
@@ -625,8 +636,8 @@ def plot_ratio_vs_ls(df, run, x_val, y_val, z_val, x_err, y_err, title_x, title_
     df_temp["errRatio"] = (1/df_temp[x_val])*    np.sqrt(df_temp[y_err]**2 + df_temp["errLumi"]**2*df_temp["ratio"]**2)
     for i in range(len(run)):
         rule = ((df_temp["board"] == z_val) & (df_temp["run"] == run[i]))
-        if (run[i] == 306125):
-            rule = rule & (df_temp.lumi > 6000)
+        if (run[i] == int(run_to_process)):
+            rule = rule & (df_temp.lumi > 10)
         if (run[i] == 319579):
             rule = rule & (df_temp.lumi > 10000)
         val1 = df_temp[rule][x_val]
@@ -641,7 +652,7 @@ def plot_ratio_vs_ls(df, run, x_val, y_val, z_val, x_err, y_err, title_x, title_
     a, b, c = inter[0], inter[1], 1-inter[0]/inter[1]
     plt.legend(loc="best")
     plt.title(title)
-    plt.show()
+    save_plot(plt)
     return float(a), float(b), float(c) #anomalous cs, normal cs, ratio of the two
 
 
@@ -655,9 +666,9 @@ for i in [-2, -1, 0, +1, +2]:
     for j in range(1, 13):
     #for j in [10]:
         if ((j == 4) | (j == 10)):
-            range_ = range(1, 6)
+            range_ = list(range(1, 6))
         else:
-            range_ = range(1, 5)
+            range_ = list(range(1, 5))
         for k in range_:
         #for k in [3]:
 
@@ -669,23 +680,23 @@ for i in [-2, -1, 0, +1, +2]:
             
             error = "err"+station
             
-            title = "Fill/Run/Board: "+str(int_lumi2["fill"].iloc[0])+                            " / "+str("[321312, 319579, 306125]")+" / " + board + "_MB" + str(k)
+            title = "Fill/Run/Board: "+str(int_lumi2["fill"].iloc[0])+                            " / "+str("[321312, 319579, int(run_to_process)]")+" / " + board + "_MB" + str(k)
                 
             #N.B.: The second run is the one used as reference
-            (a, b, c) = plot_ratio_vs_ls(df_rates, [306125, 319579, 321312], "lumi", station, board, 0,                            error, r"Inst. Lumi. [$\times10^{30}$ Hz/cm$^2$]", 
+            (a, b, c) = plot_ratio_vs_ls(df_rates, [int(run_to_process), 319579, 321312], "lumi", station, board, 0,                            error, r"Inst. Lumi. [$\times10^{30}$ Hz/cm$^2$]", 
                             r"Cross-section [$\times10^{-30}$ cm$^{2}$]", title, ["ro", "bo", "go"], True)
 
             ratio = ratio.append({"wheel": i, "sector": j, "station": k, "ratio": c, "cs_norm": b,                                  "cs_anomal": a}, ignore_index = True)
             
-            print "Anomalous CS:", a, ", Normal CS:", b, ", Ratio:", c
+            print("Anomalous CS:", a, ", Normal CS:", b, ", Ratio:", c)
             
 
 
 # In[101]:
 
 
-print ratio[(ratio.wheel == +1) & (ratio.sector == 4) & (ratio.station == 3)]
-print ratio[(ratio.wheel == -1) & (ratio.sector == 3) & (ratio.station == 3)]
+print(ratio[(ratio.wheel == +1) & (ratio.sector == 4) & (ratio.station == 3)])
+print(ratio[(ratio.wheel == -1) & (ratio.sector == 3) & (ratio.station == 3)])
 
 
 # In[103]:
@@ -699,7 +710,7 @@ plt.plot(ratio[ratio.wheel != -3].ratio)
 # In[104]:
 
 
-print len(df_rates)
+print(len(df_rates))
 algos = ['RPC1', 'RPC2', 'RPC3', 'RPC4', 'DT1', 'DT2', 'DT3', 'DT4', 'DT5']
 df_rates_new = pd.DataFrame(columns=['run', 'group', 'board', 'wheel', 'sector', 'ls',                                     'lumi', 'errLumi', 'rate', 'err', 'system', 'station'])
 
@@ -722,7 +733,7 @@ for i in algos:
     #print temp.columns
     df_rates_new = pd.concat([df_rates_new, temp], ignore_index=True)
 
-print len(df_rates_new)
+print(len(df_rates_new))
 
 
 # In[105]:
@@ -742,7 +753,7 @@ def plot_rate_vs_ls(df, run, x_val, y_val, z_val, x_err, y_err, title_x, title_y
         plt.errorbar(df_temp[rule][x_val], df_temp[rule][y_val], xerr=x_err,                     yerr=df_temp[rule][y_err], fmt=opt, ecolor='r')
     plt.legend(loc="best")
     plt.title(title)
-    plt.show()
+    save_plot(plt)
 
 
 # In[106]:
@@ -770,14 +781,14 @@ def plot_vs_ls(df, run, x_val, y_val, z_val, x_err, y_err, title_x, title_y, tit
         plt.errorbar(df_temp[rule][x_val], df_temp[rule]["lumi"], xerr=x_err, yerr=df_temp[rule]["errLumi"],                     fmt='bo', ecolor='b')
     plt.legend(loc="best")
     plt.title(title)
-    plt.show()
+    save_plot(plt)
 
 
 # In[108]:
 
 
-title = "Rates for Fill/Run/Board: "+str(int_lumi2["fill"].iloc[0])+                            " / 306125 / YB+1_S4_MB4"
-plot_vs_ls(df_rates_new[(df_rates_new["system"] == 2) & (df_rates_new["station"] == 4)], [306125],                "ls", "rate", "YB+1_S4", 0, "err", r"Inst. Lumi. [$\times10^{30}$ Hz/cm$^2$]",                "Rate [Hz]", title, "ro", False)
+title = "Rates for Fill/Run/Board: "+str(int_lumi2["fill"].iloc[0])+                            " / int(run_to_process) / YB+1_S4_MB4"
+plot_vs_ls(df_rates_new[(df_rates_new["system"] == 2) & (df_rates_new["station"] == 4)], [int(run_to_process)],                "ls", "rate", "YB+1_S4", 0, "err", r"Inst. Lumi. [$\times10^{30}$ Hz/cm$^2$]",                "Rate [Hz]", title, "ro", False)
 
 
 # In[109]:
@@ -794,33 +805,33 @@ df_rates_new["CS"] = -1
 df_rates_new["errCS"] = -1
 
 df_rates_new["CS"] = df_rates_new["rate"]/df_rates_new["lumi"]
-print "Number of NaN's in CS before:"
-print len(df_rates_new["CS"][df_rates_new["CS"].isnull() == True])
-print "Number of Inf's in CS before:"
-print len(df_rates_new["CS"][np.isinf(df_rates_new["CS"])])
+print("Number of NaN's in CS before:")
+print(len(df_rates_new["CS"][df_rates_new["CS"].isnull() == True]))
+print("Number of Inf's in CS before:")
+print(len(df_rates_new["CS"][np.isinf(df_rates_new["CS"])]))
 
 df_rates_new["CS"] = df_rates_new["CS"].replace([np.inf, -np.inf], np.nan)
 df_rates_new["CS"] = df_rates_new["CS"].fillna(-1)
 
-print "Number of NaN's in CS after:"
-print len(df_rates_new["CS"][df_rates_new["CS"].isnull() == True])
-print "Number of Inf's in CS after:"
-print len(df_rates_new["CS"][np.isinf(df_rates_new["CS"])])
+print("Number of NaN's in CS after:")
+print(len(df_rates_new["CS"][df_rates_new["CS"].isnull() == True]))
+print("Number of Inf's in CS after:")
+print(len(df_rates_new["CS"][np.isinf(df_rates_new["CS"])]))
 
 df_rates_new["errCS"] = (1/df_rates_new["lumi"])*np.sqrt(df_rates_new["err"]**2 + df_rates_new["CS"]**2 * df_rates_new["errLumi"]**2)
 
-print "Number of NaN's in errCS before:"
-print len(df_rates_new["errCS"][df_rates_new["errCS"].isnull() == True])
-print "Number of Inf's in errCS before:"
-print len(df_rates_new["errCS"][np.isinf(df_rates_new["errCS"])])
+print("Number of NaN's in errCS before:")
+print(len(df_rates_new["errCS"][df_rates_new["errCS"].isnull() == True]))
+print("Number of Inf's in errCS before:")
+print(len(df_rates_new["errCS"][np.isinf(df_rates_new["errCS"])]))
 
 df_rates_new["errCS"] = df_rates_new["errCS"].replace([np.inf, -np.inf], np.nan)
 df_rates_new["errCS"] = df_rates_new["errCS"].fillna(-1)
 
-print "Number of NaN's in errCS after:"
-print len(df_rates_new["errCS"][df_rates_new["errCS"].isnull() == True])
-print "Number of Inf's in errCS after:"
-print len(df_rates_new["errCS"][np.isinf(df_rates_new["errCS"])])
+print("Number of NaN's in errCS after:")
+print(len(df_rates_new["errCS"][df_rates_new["errCS"].isnull() == True]))
+print("Number of Inf's in errCS after:")
+print(len(df_rates_new["errCS"][np.isinf(df_rates_new["errCS"])]))
 
 
 # In[111]:
@@ -832,8 +843,8 @@ array = df_rates_new.as_matrix(columns=['system', 'wheel', 'sector', 'station', 
 # In[112]:
 
 
-print len(array)
-print len(df_rates_new)
+print(len(array))
+print(len(df_rates_new))
 
 
 # In[113]:
@@ -869,9 +880,9 @@ df_rates_new = df_rates_new[rule == False]
 df_rates_new["ratio"] = 0
 for i in [-2, -1, 0, +1, +2]:
     for j in range(1, 13):
-        range_ = range(1, 5)
+        range_ = list(range(1, 5))
         if ((j == 4) | (j == 10)):
-            range_ = range(1, 6)
+            range_ = list(range(1, 6))
         for k in range_:
             rule = (df_rates_new.wheel == i) & (df_rates_new.sector == j) & (df_rates_new.station == k)
             rule_r = (ratio.wheel == i) & (ratio.sector == j) & (ratio.station == k)
@@ -890,7 +901,7 @@ for i in [-2, -1, 0, +1, +2]:
 
 
 df_rates_new_2 = df_rates_new.copy()
-print df_rates_new["content"].loc[166321]
+#print(df_rates_new["content"].loc[166321])
 
 
 # In[118]:
@@ -916,7 +927,7 @@ df_rates_new = df_rates_new[df_rates_new["system"] == 2]
 # In[120]:
 
 
-print df_rates_new["content"].loc[166321]
+#print(df_rates_new["content"].loc[166321])
 
 
 # In[121]:
@@ -924,7 +935,7 @@ print df_rates_new["content"].loc[166321]
 
 normalies = df_rates_new.copy()
 anomalies = df_rates_new.copy()
-print len(normalies), len(anomalies)
+print(len(normalies), len(anomalies))
 
 
 # In[122]:
@@ -941,12 +952,12 @@ anomalies["averageLS"] = anomalies["group"].apply(deduceLS)
 
 
 rule = (normalies["wheel"] == -1) & (normalies["sector"] == 3) & (normalies["station"] == 3) 
-print "Normal chimney:"
-print normalies[rule]["content"].iloc[100]
+print("Normal chimney:")
+print(normalies[rule]["content"].iloc[100])
 
 rule = (normalies["wheel"] == 1) & (normalies["sector"] == 4) & (normalies["station"] == 3)
-print "Anomalous chimney:"
-print normalies[rule]["content"].iloc[100]
+print("Anomalous chimney:")
+print(normalies[rule]["content"].iloc[100])
 
 
 # In[124]:
@@ -978,10 +989,10 @@ def change(data, red = 1):
     #print temp
     return temp
 
-print anomalies["content"].iloc[0]
+print(anomalies["content"].iloc[0])
 anomalies["content_2"] = anomalies["content"].copy()
 anomalies["content_2"] = anomalies["content"].apply(change)
-print anomalies["content_2"].iloc[0]
+print(anomalies["content_2"].iloc[0])
 
 
 # In[126]:
@@ -1046,9 +1057,9 @@ anomalies["content_scaled"] = anomalies["content"].apply(scale_data)
 
 #layers_test = anomalies.copy()
 layers_test = (anomalies[(anomalies.run == 319579) | (anomalies.run == 321312)]).copy()
-print "Tot:", len(layers_test)
-print "Normalies:", len(layers_test[layers_test.score == -1])
-print "Anomalies", len(layers_test[layers_test.score == 1])
+print("Tot:", len(layers_test))
+print("Normalies:", len(layers_test[layers_test.score == -1]))
+print("Anomalies", len(layers_test[layers_test.score == 1]))
 
 
 # In[129]:
@@ -1129,7 +1140,7 @@ plt.legend(loc='best')
 plt.ylabel('Frequency')
 plt.xlabel('Score')
 plt.axvline(0.1, color='k', linestyle='dashed', linewidth=1)
-plt.show()
+save_plot(plt)
 
 
 # In[159]:
@@ -1149,7 +1160,7 @@ plt.legend(loc='best')
 plt.ylabel('Frequency')
 plt.xlabel('Score')
 plt.axvline(0.05, color='k', linestyle='dashed', linewidth=1)
-plt.show()
+save_plot(plt)
 
 
 # In[160]:
@@ -1167,7 +1178,7 @@ plt.legend(loc='best')
 plt.ylabel('Frequency')
 plt.xlabel('Score')
 plt.axvline(0.05, color='k', linestyle='dashed', linewidth=1)
-plt.show()
+save_plot(plt)
 
 
 # In[161]:
@@ -1199,7 +1210,7 @@ def plot_confusion_matrix(cm, classes,
 
     fmt = '.2f' if normalize else 'd'
     thresh = cm.max() / 2.
-    for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
+    for i, j in itertools.product(list(range(cm.shape[0])), list(range(cm.shape[1]))):
         plt.text(j, i, format(cm[i, j], fmt),
                  horizontalalignment="center",
                  color="white" if cm[i, j] > thresh else "black")
@@ -1251,7 +1262,7 @@ def plotFpVsLs(run, wheel, sector, station, title, df, algo, threshold, log, bou
     plt.xlabel('LS')
     plt.grid(True)
     #plt.plot([bound, bound], [0, 100], color='r', linestyle='--', linewidth=2)
-    plt.show()
+    save_plot(plt)
     return n
 
 
@@ -1293,9 +1304,9 @@ def benchmark(y_true, y_score, treshold):
     sensitivity = round(float(tp)/(tp+fn), 4)
     specificity = round(float(tn)/(tn+fp), 4)
 
-    print("Model accuracy: %s" % round(accuracy_score(y_true, y_pred), 4))
-    print("Model sensitivity: %s" % sensitivity)
-    print("Model specificity: %s" % specificity)
+    print(("Model accuracy: %s" % round(accuracy_score(y_true, y_pred), 4)))
+    print(("Model sensitivity: %s" % sensitivity))
+    print(("Model specificity: %s" % specificity))
 
     return specificity, sensitivity
 
@@ -1324,7 +1335,7 @@ def get_roc_curve(test_df, models, working_point=None):
     plt.legend(loc='best')
     plt.ylabel('True positive rate')
     plt.xlabel('False positive rate')
-    plt.show();
+    save_plot(plt);
 
 
 # In[169]:
@@ -1403,7 +1414,7 @@ def plot_scatter(df, run, wheel, ls_min, ls_max):
     plt.colorbar(im, cax=cax, ticks=[np.min(np.nan_to_num(mat)), np.max(np.nan_to_num(mat))])
     title = "Run: "+run_s+", Wheel: "+wheel_s+", LS: "+ls_s
     plt.title(title, loc="right")   
-    plt.show()
+    save_plot(plt)
 
 
 # In[172]:
@@ -1451,7 +1462,7 @@ def plot_scatter_2(df, arg, wheel):
     plt.colorbar(im, cax=cax, ticks=[np.min(np.nan_to_num(mat)), np.max(np.nan_to_num(mat))])
     title = "Wheel: "+wheel_s
     plt.title(title, loc="right")   
-    plt.show()
+    save_plot(plt)
 
 
 # Decrease in rate per station and sector in each wheel:
@@ -1512,11 +1523,11 @@ ax.grid()
 bins = np.linspace(-1, +1, 3)
 plt.hist(layers_test[layers_test["score"] < 0]["lof_score"], bins=bins, alpha=0.5, label="Normalies")
 plt.hist(layers_test[layers_test["score"] > 0]["lof_score"], bins=bins, alpha=0.5, label="Anomalies")
-plt.title("Distribution of scores: LOF (321312 + 306125)")
+plt.title("Distribution of scores: LOF (321312 + int(run_to_process))")
 plt.legend(loc='best')
 plt.ylabel('Frequency')
 plt.xlabel('Score')
-plt.show()
+save_plot(plt)
 
 
 # In[178]:
@@ -1604,8 +1615,8 @@ layers_test["content_red_scaled"] = layers_test["content_red"].apply(scale_data,
 # In[183]:
 
 
-print layers_test["content_red"].iloc[100]
-print layers_test["content_red_scaled"].iloc[100]
+print(layers_test["content_red"].iloc[100])
+print(layers_test["content_red_scaled"].iloc[100])
 
 
 # In[184]:
@@ -1669,7 +1680,7 @@ def plot_scatter_3(df, arg, wheel, range_ = False):
     plt.colorbar(im, cax=cax, ticks=[np.min(np.nan_to_num(mat)), np.max(np.nan_to_num(mat))])
     title = "Wheel: "+wheel_s
     plt.title(title, loc="right")   
-    plt.show()
+    save_plot(plt)
 
 
 # In[186]:
@@ -1747,7 +1758,7 @@ plt.title("K-Means average distance distribution (321312)")
 plt.legend(loc='best')
 plt.ylabel('Frequency')
 plt.xlabel('Distance to the closest cluster')
-plt.show()
+save_plot(plt)
 
 
 # In[193]:
@@ -1765,7 +1776,7 @@ plt.title("K-Means average distance distribution (321312)")
 plt.legend(loc='best')
 plt.ylabel('Frequency')
 plt.xlabel('Distance to the closest cluster')
-plt.show()
+save_plot(plt)
 
 
 # In[194]:
@@ -1851,7 +1862,7 @@ plt.legend(loc='best')
 plt.ylabel('Frequency')
 plt.xlabel('Score')
 plt.axvline(0.0, color='k', linestyle='dashed', linewidth=1)
-plt.show()
+save_plot(plt)
 
 
 # In[201]:
