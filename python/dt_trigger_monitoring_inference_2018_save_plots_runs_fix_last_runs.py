@@ -250,33 +250,24 @@ def plot_inst_lumi(x_val, y_val, z_val, title):
 
 # In[64]:
 
-
 plot_inst_lumi(int_lumi2[int_lumi2["run"] == 321312]["time"], 
                int_lumi2[int_lumi2["run"] == 321312]["delivered"], 
                int_lumi2[int_lumi2["run"] == 321312]["recorded"], 
-               ("Instantaneous Luminosity for Run / Fill: %s / %s" % 
-               (boundaries["run"].iloc[0], int_lumi2["fill"].iloc[0])))
-
+               ("Instantaneous Luminosity for Run " + str(int(boundaries["run"].iloc[2])) + "/ Fill: " + str(int_lumi2[int_lumi2["run"] == 321312]["fill"].iloc[0])))
 
 # In[65]:
-
 
 plot_inst_lumi(int_lumi2[int_lumi2["run"] == int(run_to_process)]["time"], 
                int_lumi2[int_lumi2["run"] == int(run_to_process)]["delivered"], 
                int_lumi2[int_lumi2["run"] == int(run_to_process)]["recorded"], 
-               ("Instantaneous Luminosity for Run / Fill: %s / %s" % 
-               (boundaries["run"].iloc[2], int_lumi2["fill"].iloc[2])))
-
+               ("Instantaneous Luminosity for Run " + str(int(boundaries["run"].iloc[0])) + "/ Fill: " + str(int_lumi2[int_lumi2["run"] == int(run_to_process)]["fill"].iloc[0])))
 
 # In[66]:
-
 
 plot_inst_lumi(int_lumi2[int_lumi2["run"] == 319579]["time"], 
                int_lumi2[int_lumi2["run"] == 319579]["delivered"], 
                int_lumi2[int_lumi2["run"] == 319579]["recorded"], 
-               ("Instantaneous Luminosity for Run / Fill: %s / %s" % 
-               (boundaries["run"].iloc[1], int_lumi2["fill"].iloc[1])))
-
+               ("Instantaneous Luminosity for Run " + str(int(boundaries["run"].iloc[1])) + "/ Fill: " + str(int_lumi2[int_lumi2["run"] == 319579]["fill"].iloc[0])))
 
 # In[67]:
 
