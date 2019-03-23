@@ -9,7 +9,6 @@
 
 # In[49]:
 
-import sys
 
 import math
 import numpy as np
@@ -181,12 +180,8 @@ for i in runs:
                                    "ls_start": start_ls.iloc[0], "ls_end": start_ls.iloc[-1], "nLS": nLS}, 
                                    ignore_index = True)
 
-print(boundaries)
-print(boundaries.sort_values(by='run'))
 boundaries=boundaries.sort_values(by='run')
 boundaries = boundaries.reset_index(drop='True')
-print(boundaries)
-#sys.exit()
 # Reindexing the dataframe after removing some lines:
 
 # In[59]:
@@ -364,20 +359,8 @@ df_rates_backup = df_rates.copy()
 
 # In[74]:
 
-#times0 = boundaries["start"]
-#timesF = boundaries["end"]
-
-#print(times0)
-#print(timesF)
-
-#print(times0.sort_values().iloc[0])
-#print(timesF.sort_values().iloc[-1])
-
 time0 = boundaries["start"].iloc[0]
 timeF = boundaries["end"].iloc[-1]
-#print(time0, timeF)
-#sys.exit()
-
 
 #time0 =  boundaries["start"].sort_values().iloc[0]
 #timeF =  boundaries["end"].sort_values().iloc[-1]
@@ -415,7 +398,6 @@ def assignLS(df1, df2, boundaries):
         indexes2 = df2[(df2.run == run1) & (df2.time > ti) & (df2.time < tf)].index
         #print indexes2
         for i in indexes2:
-            #if(((time1 >= df2["time"].loc[i]) & (time1 < df2["time_end"].loc[i])) | (df2["run"].loc[i] == 321312) ):
             if((time1 >= df2["time"].loc[i]) & (time1 < df2["time_end"].loc[i]) ):
                 #print time1, df2["time"].loc[i], df2["time_end"].loc[i]
                 if(j%1000 == 0): 
