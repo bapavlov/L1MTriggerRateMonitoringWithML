@@ -357,22 +357,23 @@ df_rates_backup = df_rates.copy()
 
 # Removing the measurements taken before and after the start and end time reported by the brilcalc output. All the 60 boards are measured at the same time. In order to speed-up the association, we take just one board, the first one. This reduces the dataframe and the time needed to go though it by a factor of 60.
 
+#Workaround to use the correct boundaries for each run
 # In[74]:
+df_rates_tmp = pd.DataFrame()
+for run in runs :
+    df_rates_per_run = df_rates.copy()
+    run_boundaries = boundaries[boundaries["run"]==run]
+    time0 = run_boundaries["start"].iloc[0]
+    timeF = run_boundaries["end"].iloc[-1]
+    df_rates_per_run = df_rates_per_run[(df_rates_per_run.run==run) & (df_rates_per_run.time >= time0) & (df_rates_per_run.time <= timeF)]
+    frames = [df_rates_tmp, df_rates_per_run]
+    df_rates_tmp = pd.concat(frames)
 
-time0 = boundaries["start"].iloc[0]
-timeF = boundaries["end"].iloc[-1]
-
-#time0 =  boundaries["start"].sort_values().iloc[0]
-#timeF =  boundaries["end"].sort_values().iloc[-1]
-#print(times0.sort_values().iloc[0],timesF.sort_values().iloc[-1])
-print(time0,timeF)
-#print df_rates[(df_rates.time >= time0) & (df_rates.time <= timeF)]
-df_rates = df_rates[(df_rates.time >= time0) & (df_rates.time <= timeF)]
-rule = df_rates.duplicated(subset=["time"])
+df_rates_tmp.to_csv("df_rates_tmp.csv",  sep='\t')
+rule = df_rates_tmp.duplicated(subset=["time"])
 count = (rule == False).sum()
 print("Duplicates:", rule.sum())
-df_rates_noduplicates = df_rates[rule == False]
-#print df_rates_noduplicates
+df_rates_noduplicates = df_rates_tmp[rule == False]
 
 
 # In[75]:
@@ -414,7 +415,6 @@ def assignLS(df1, df2, boundaries):
 temp = assignLS(df_rates_noduplicates, int_lumi2, boundaries)
 df_rates_noduplicates = temp
 
-
 # Removing the few cases not assigned and that are still at -1:
 
 # In[77]:
@@ -426,12 +426,16 @@ print(len(df_rates_noduplicates))
 
 # Save in a csv file:
 
+
 # In[78]:
 
 
 #df_rates.to_csv("df_rates_issues.csv", sep='\t')
 #df_rates_noduplicates.to_csv("df_rates_nodup_issues.csv", sep='\t')
 
+#save the data only for the run under processing
+df_for_TheRun = df_rates_noduplicates[df_rates_noduplicates["run"]==run_to_process]
+df_for_TheRun.to_csv("run_to_process.csv", sep='\t')
 
 # In[79]:
 
@@ -756,7 +760,7 @@ def plot_rate_vs_ls(df, run, x_val, y_val, z_val, x_err, y_err, title_x, title_y
 
 
 title = "Rates for Fill/Run/Board: "+str(int_lumi2["fill"].iloc[0])+ " / " + str(run_to_process) +" / YB+1_S4_MB1"
-plot_rate_vs_ls(df_rates_new[(df_rates_new["system"] == 2) & (df_rates_new["station"] == 1)], [str(run_to_process)],                "lumi", "rate", "YB+1_S4", 0, "err", r"Inst. Lumi. [$\times10^{30}$ cm$^2$s$^{-1}$]",                "Rate [Hz]", title, "ro", False)
+plot_rate_vs_ls(df_rates_new[(df_rates_new["system"] == 2) & (df_rates_new["station"] == 1)], [run_to_process],                "lumi", "rate", "YB+1_S4", 0, "err", r"Inst. Lumi. [$\times10^{30}$ cm$^2$s$^{-1}$]",                "Rate [Hz]", title, "ro", False)
 
 
 # In[107]:
@@ -790,7 +794,7 @@ plot_vs_ls(df_rates_new[(df_rates_new["system"] == 2) & (df_rates_new["station"]
 # In[109]:
 
 
-title = "Rates for Fill/Run/Board: "+str(int_lumi2["fill"].iloc[0])+                            " / run_to_process / YB+1_S4_MB4"
+title = "Rates for Fill/Run/Board: "+str(int_lumi2["fill"].iloc[0])+                            " / " + str(run_to_process) + " / YB+1_S4_MB4"
 plot_vs_ls(df_rates_new[(df_rates_new["system"] == 2) & (df_rates_new["station"] == 4)], [run_to_process],                "ls", "rate", "YB+1_S4", 0, "err", r"Inst. Lumi. [$\times10^{30}$ cm$^2$s$^{-1}$]",                "Rate [Hz]", title, "ro", False)
 
 
