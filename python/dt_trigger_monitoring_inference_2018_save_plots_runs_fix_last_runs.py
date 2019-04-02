@@ -336,7 +336,7 @@ def plot_rate_vs_time(df, x_val, y_val, z_val, title):
     plt.legend(loc="best")
     save_plot(plt);
 
-plot_rate_vs_time(df_rates[df_rates.run == 321312], "time", "DT1",                  "YB+1_S4", "Rates for Runs / Fill / Board: %s / %s / %s" %                   ("321312", int_lumi2["fill"].iloc[2], "YB+1_S4"))
+plot_rate_vs_time(df_rates[df_rates.run == run_to_process], "time", "DT1",                  "YB+1_S4", "Rates for Runs / Fill / Board: %s / %s / %s" %                   (str(run_to_process), int_lumi2["fill"].iloc[2], "YB+1_S4"))
 
 
 # Associating a LS and an instantaneous luminosity to each rate:
@@ -755,8 +755,8 @@ def plot_rate_vs_ls(df, run, x_val, y_val, z_val, x_err, y_err, title_x, title_y
 # In[106]:
 
 
-title = "Rates for Fill/Run/Board: "+str(int_lumi2["fill"].iloc[0])+                            " / 321312 / YB+1_S4_MB1"
-plot_rate_vs_ls(df_rates_new[(df_rates_new["system"] == 2) & (df_rates_new["station"] == 1)], [321312],                "lumi", "rate", "YB+1_S4", 0, "err", r"Inst. Lumi. [$\times10^{30}$ cm$^2$s$^{-1}$]",                "Rate [Hz]", title, "ro", False)
+title = "Rates for Fill/Run/Board: "+str(int_lumi2["fill"].iloc[0])+                            " / " + str(run_to_process +" / YB+1_S4_MB1"
+plot_rate_vs_ls(df_rates_new[(df_rates_new["system"] == 2) & (df_rates_new["station"] == 1)], [run_to_process],                "lumi", "rate", "YB+1_S4", 0, "err", r"Inst. Lumi. [$\times10^{30}$ cm$^2$s$^{-1}$]",                "Rate [Hz]", title, "ro", False)
 
 
 # In[107]:
@@ -790,8 +790,8 @@ plot_vs_ls(df_rates_new[(df_rates_new["system"] == 2) & (df_rates_new["station"]
 # In[109]:
 
 
-title = "Rates for Fill/Run/Board: "+str(int_lumi2["fill"].iloc[0])+                            " / 321312 / YB+1_S4_MB4"
-plot_vs_ls(df_rates_new[(df_rates_new["system"] == 2) & (df_rates_new["station"] == 4)], [321312],                "ls", "rate", "YB+1_S4", 0, "err", r"Inst. Lumi. [$\times10^{30}$ cm$^2$s$^{-1}$]",                "Rate [Hz]", title, "ro", False)
+title = "Rates for Fill/Run/Board: "+str(int_lumi2["fill"].iloc[0])+                            " / run_to_process / YB+1_S4_MB4"
+plot_vs_ls(df_rates_new[(df_rates_new["system"] == 2) & (df_rates_new["station"] == 4)], [run_to_process],                "ls", "rate", "YB+1_S4", 0, "err", r"Inst. Lumi. [$\times10^{30}$ cm$^2$s$^{-1}$]",                "Rate [Hz]", title, "ro", False)
 
 
 # In[110]:
@@ -1052,7 +1052,7 @@ anomalies["content_scaled"] = anomalies["content"].apply(scale_data)
 
 
 #layers_test = anomalies.copy()
-layers_test = (anomalies[(anomalies.run == 319579) | (anomalies.run == 321312)]).copy()
+layers_test = (anomalies[(anomalies.run == 319579) | (anomalies.run == run_to_process)]).copy()
 print("Tot:", len(layers_test))
 print("Normalies:", len(layers_test[layers_test.score == -1]))
 print("Anomalies", len(layers_test[layers_test.score == 1]))
@@ -1167,8 +1167,8 @@ fig, ax = plt.subplots()
 ax.set_yscale('log')
 ax.grid()
 bins = np.linspace(0, 0.5, 100)
-plt.hist(layers_test[(layers_test["score"] < 0) & (layers_test.run == 321312)]["st_score"],         bins=bins, alpha=0.5,         label="Normal chambers")
-plt.hist(layers_test[(layers_test["score"] > 0) & (layers_test.run == 321312)]["st_score"],         bins=bins, alpha=0.5,         label="Anomalous chambers")
+plt.hist(layers_test[(layers_test["score"] < 0) & (layers_test.run == run_to_process)]["st_score"],         bins=bins, alpha=0.5,         label="Normal chambers")
+plt.hist(layers_test[(layers_test["score"] > 0) & (layers_test.run == run_to_process)]["st_score"],         bins=bins, alpha=0.5,         label="Anomalous chambers")
 plt.title("Distribution of scores: Simple Test")
 plt.legend(loc='best')
 plt.ylabel('Frequency')
@@ -1220,7 +1220,7 @@ def plot_confusion_matrix(cm, classes,
 
 
 th_km = 0.05
-rule = (layers_test.run == 321312)
+rule = (layers_test.run == run_to_process)
 y_pred = 2*(layers_test[rule]["st_score"] > th_km)-1
 cnf_matrix = confusion_matrix(layers_test[rule]["score"].astype(int), y_pred)
 # Plot non-normalized confusion matrix
@@ -1275,7 +1275,7 @@ plotFpVsLs(319579, 0, 0, 0, "Distribution of false positives: Simple Test, ",   
 
 layers_test["averageLS"] = layers_test["group"].apply(deduceLS)
 threshold = 0.1
-plotFpVsLs(321312, 0, 0, 0, "Distribution of false positives: Simple Test, ",           layers_test, "st_score",           threshold, True, boundaries[boundaries["run"] == 321312]["ls_end"])
+plotFpVsLs(run_to_process, 0, 0, 0, "Distribution of false positives: Simple Test, ",           layers_test, "st_score",           threshold, True, boundaries[boundaries["run"] == run_to_process]["ls_end"])
 
 
 # ## Inference
@@ -1543,7 +1543,7 @@ plot_confusion_matrix(cnf_matrix, classes=["normaly","anomaly"], normalize=True,
 
 layers_test["averageLS"] = layers_test["group"].apply(deduceLS)
 threshold = 0.0
-plotFpVsLs(321312, 0, 0, 0, "Distribution of false positives: LOF, ", layers_test, "lof_score",           threshold, True, boundaries[boundaries["run"] == 321312]["ls_end"])
+plotFpVsLs(run_to_process, 0, 0, 0, "Distribution of false positives: LOF, ", layers_test, "lof_score",           threshold, True, boundaries[boundaries["run"] == run_to_process]["ls_end"])
 #plotFpVsLs(302635, 0, 0, 0, "Distribution of false positives: LOF, ", layers_test, "lof_score",\
             #threshold, True, boundaries[boundaries["run"] == 302635]["ls_end"])
 
@@ -1692,11 +1692,11 @@ plot_scatter_3(layers_test[layers_test.run == 319579], "CS_red", +2, True)
 # In[187]:
 
 
-plot_scatter_3(layers_test[layers_test.run == 321312], "CS_red", -2)
-plot_scatter_3(layers_test[layers_test.run == 321312], "CS_red", -1)
-plot_scatter_3(layers_test[layers_test.run == 321312], "CS_red", 0)
-plot_scatter_3(layers_test[layers_test.run == 321312], "CS_red", +1)
-plot_scatter_3(layers_test[layers_test.run == 321312], "CS_red", +2)
+plot_scatter_3(layers_test[layers_test.run == run_to_process], "CS_red", -2)
+plot_scatter_3(layers_test[layers_test.run == run_to_process], "CS_red", -1)
+plot_scatter_3(layers_test[layers_test.run == run_to_process], "CS_red", 0)
+plot_scatter_3(layers_test[layers_test.run == run_to_process], "CS_red", +1)
+plot_scatter_3(layers_test[layers_test.run == run_to_process], "CS_red", +2)
 
 
 # In[188]:
@@ -1723,7 +1723,7 @@ k_means = joblib.load(filename)
 # In[190]:
 
 
-rule = (layers_test.run == 321312) & (layers_test.ls > 50)
+rule = (layers_test.run == run_to_process) & (layers_test.ls > 50)
 #& (layers_test.score == 1)
 reduced_anom = layers_test[rule].copy()
 
@@ -1750,7 +1750,7 @@ bins = np.linspace(0, 2.0, 200)
 plt.hist(reduced_anom[reduced_anom["score"] < 0]["dist"], bins=bins,         alpha=0.5, label="Normal chambers")
 plt.hist(reduced_anom[reduced_anom["score"] > 0]["dist"], bins=bins,         alpha=0.5, label="Anomalous chambers")
 plt.axvline(0.4, color='k', linestyle='dashed', linewidth=1)
-plt.title("K-Means average distance distribution (321312)")
+plt.title("K-Means average distance distribution (run_to_process)")
 plt.legend(loc='best')
 plt.ylabel('Frequency')
 plt.xlabel('Distance to the closest cluster')
@@ -1768,7 +1768,7 @@ bins = np.linspace(100000, 300000.0, 10)
 rule = (reduced_anom.wheel == -1) & (reduced_anom.sector == 10) & (reduced_anom.station == 3)
 plt.hist(reduced_anom[rule & (reduced_anom["score"] < 0)]["dist"], bins=bins,         alpha=0.5, label="Anomalous chambers W-1_S10_MB3")
 #plt.axvline(0.4, color='k', linestyle='dashed', linewidth=1)
-plt.title("K-Means average distance distribution (321312)")
+plt.title("K-Means average distance distribution (run_to_process)")
 plt.legend(loc='best')
 plt.ylabel('Frequency')
 plt.xlabel('Distance to the closest cluster')
@@ -1806,7 +1806,7 @@ get_roc_curve(reduced_anom,[
 
 
 threshold = th_km
-plotFpVsLs(321312, 0, 0, 0, "Distribution of false positives: KMeans clustering, ", reduced_anom, "dist",           threshold, True, boundaries[boundaries["run"] == 321312]["ls_end"])
+plotFpVsLs(run_to_process, 0, 0, 0, "Distribution of false positives: KMeans clustering, ", reduced_anom, "dist",           threshold, True, boundaries[boundaries["run"] == run_to_process]["ls_end"])
 #plotFpVsLs(302635, 0, 0, 0, "Distribution of false positives: LOF, ", layers_test, "lof_score",\
             #threshold, True, boundaries[boundaries["run"] == 302635]["ls_end"])
 
@@ -1817,11 +1817,11 @@ plotFpVsLs(321312, 0, 0, 0, "Distribution of false positives: KMeans clustering,
 dis_nn = "dist"
 rule = (reduced_anom["score"] == -1) & (reduced_anom[dis_nn] > th_km)
 
-plot_scatter(reduced_anom[rule], 321312, -2, 70, -1)
-plot_scatter(reduced_anom[rule], 321312, -1, 70, -1)
-plot_scatter(reduced_anom[rule], 321312, 0, 70, -1)
-plot_scatter(reduced_anom[rule], 321312, +1, 70, -1)
-plot_scatter(reduced_anom[rule], 321312, +2, 70, -1)
+plot_scatter(reduced_anom[rule], run_to_process, -2, 70, -1)
+plot_scatter(reduced_anom[rule], run_to_process, -1, 70, -1)
+plot_scatter(reduced_anom[rule], run_to_process, 0, 70, -1)
+plot_scatter(reduced_anom[rule], run_to_process, +1, 70, -1)
+plot_scatter(reduced_anom[rule], run_to_process, +2, 70, -1)
 
 
 # ## LOF reduced
@@ -1831,7 +1831,7 @@ plot_scatter(reduced_anom[rule], 321312, +2, 70, -1)
 # In[198]:
 
 
-rule1 = (layers_test.run == 321312) & ((layers_test.ls > 50))
+rule1 = (layers_test.run == run_to_process) & ((layers_test.ls > 50))
 rule2 = (layers_test.run == 319579) & ((layers_test.ls > 50)) & ((layers_test.ls < 3000))
 reduced_anom_2 = layers_test[rule1 | rule2].copy()
 
@@ -1879,11 +1879,11 @@ plot_confusion_matrix(cnf_matrix, classes=["normaly","anomaly"], normalize=True,
 dis_nn = "lof_score_red"
 rule = (reduced_anom_2["score"] == -1) & (reduced_anom_2[dis_nn] > th_km)
 
-plot_scatter(reduced_anom_2[rule], 321312, -2, 5, -1)
-plot_scatter(reduced_anom_2[rule], 321312, -1, 5, -1)
-plot_scatter(reduced_anom_2[rule], 321312, 0, 5, -1)
-plot_scatter(reduced_anom_2[rule], 321312, +1, 5, -1)
-plot_scatter(reduced_anom_2[rule], 321312, +2, 5, -1)
+plot_scatter(reduced_anom_2[rule], run_to_process, -2, 5, -1)
+plot_scatter(reduced_anom_2[rule], run_to_process, -1, 5, -1)
+plot_scatter(reduced_anom_2[rule], run_to_process, 0, 5, -1)
+plot_scatter(reduced_anom_2[rule], run_to_process, +1, 5, -1)
+plot_scatter(reduced_anom_2[rule], run_to_process, +2, 5, -1)
 
 
 # In[203]:
@@ -1891,7 +1891,7 @@ plot_scatter(reduced_anom_2[rule], 321312, +2, 5, -1)
 
 reduced_anom_2["averageLS"] = reduced_anom_2["group"].apply(deduceLS)
 threshold = 0.0
-plotFpVsLs(321312, 0, 0, 0, "Distribution of false positives: LOF, ", reduced_anom_2, "lof_score_red",           threshold, True, boundaries[boundaries["run"] == 321312]["ls_end"])
+plotFpVsLs(run_to_process, 0, 0, 0, "Distribution of false positives: LOF, ", reduced_anom_2, "lof_score_red",           threshold, True, boundaries[boundaries["run"] == run_to_process]["ls_end"])
 #plotFpVsLs(302635, 0, 0, 0, "Distribution of false positives: LOF, ", layers_test, "lof_score",\
             #threshold, True, boundaries[boundaries["run"] == 302635]["ls_end"])
 
