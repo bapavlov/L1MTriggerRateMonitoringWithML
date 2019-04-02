@@ -755,8 +755,8 @@ def plot_rate_vs_ls(df, run, x_val, y_val, z_val, x_err, y_err, title_x, title_y
 # In[106]:
 
 
-title = "Rates for Fill/Run/Board: "+str(int_lumi2["fill"].iloc[0])+                            " / " + str(run_to_process +" / YB+1_S4_MB1"
-plot_rate_vs_ls(df_rates_new[(df_rates_new["system"] == 2) & (df_rates_new["station"] == 1)], [run_to_process],                "lumi", "rate", "YB+1_S4", 0, "err", r"Inst. Lumi. [$\times10^{30}$ cm$^2$s$^{-1}$]",                "Rate [Hz]", title, "ro", False)
+title = "Rates for Fill/Run/Board: "+str(int_lumi2["fill"].iloc[0])+ " / " + str(run_to_process) +" / YB+1_S4_MB1"
+plot_rate_vs_ls(df_rates_new[(df_rates_new["system"] == 2) & (df_rates_new["station"] == 1)], [str(run_to_process)],                "lumi", "rate", "YB+1_S4", 0, "err", r"Inst. Lumi. [$\times10^{30}$ cm$^2$s$^{-1}$]",                "Rate [Hz]", title, "ro", False)
 
 
 # In[107]:
