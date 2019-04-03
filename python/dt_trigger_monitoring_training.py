@@ -46,7 +46,7 @@ from sklearn import cluster, datasets
 
 
 # Change presentation settings
-#get_ipython().run_line_magic('matplotlib', 'inline')
+get_ipython().run_line_magic('matplotlib', 'inline')
 
 matplotlib.rcParams["figure.figsize"] = (15.0, 8.0)
 matplotlib.rcParams["xtick.labelsize"] = 16
