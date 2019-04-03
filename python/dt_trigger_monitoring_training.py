@@ -46,7 +46,7 @@ from sklearn import cluster, datasets
 
 
 # Change presentation settings
-get_ipython().run_line_magic('matplotlib', 'inline')
+#get_ipython().run_line_magic('matplotlib', 'inline')
 
 matplotlib.rcParams["figure.figsize"] = (15.0, 8.0)
 matplotlib.rcParams["xtick.labelsize"] = 16
@@ -60,6 +60,11 @@ matplotlib.rcParams["figure.titlesize"] = 16
 matplotlib.rcParams["axes.labelsize"] = 14
 matplotlib.rcParams["legend.fontsize"] = 14
 
+def save_plot(plot):
+    save_plot.counter +=1
+    plot.savefig(str(save_plot.counter))
+    plot.show()
+save_plot.counter = 0
 
 # In[3]:
 
@@ -252,7 +257,7 @@ def plot_inst_lumi(x_val, y_val, z_val, title):
     plt.plot(x_val, z_val, 'bo-')
     plt.title(title)
     plt.legend(loc="best")
-    plt.show();
+    save_plot(plt);
 
 
 # In[18]:
@@ -360,7 +365,7 @@ def plot_rate_vs_time(df, x_val, y_val, z_val, title):
     plt.plot(df_temp[x_val], df_temp[y_val], 'ro-')
     plt.title(title)
     plt.legend(loc="best")
-    plt.show();
+    save_plot(plt);
 
 rule = (df_rates.run != 305814)
 plot_rate_vs_time(df_rates[rule],                  "time", "DT1", "YB+1_S4", "Rates for Runs / Fill / Board: %s / %s / %s" % 
@@ -388,18 +393,21 @@ df_rates_backup = df_rates.copy()
 
 # In[29]:
 
+df_rates_tmp = pd.DataFrame()
+for run in runs :
+    df_rates_per_run = df_rates.copy()
+    run_boundaries = boundaries[boundaries["run"]==run]
+    time0 = run_boundaries["start"].iloc[0]
+    timeF = run_boundaries["end"].iloc[-1]
+    df_rates_per_run = df_rates_per_run[(df_rates_per_run.run==run) & (df_rates_per_run.time >= time0) & (df_rates_per_run.time <= timeF)]
+    frames = [df_rates_tmp, df_rates_per_run]
+    df_rates_tmp = pd.concat(frames)
 
-time0 = boundaries["start"].iloc[0]
-timeF = boundaries["end"].iloc[-1]
-print(time0, timeF)
-#print df_rates[(df_rates.time >= time0) & (df_rates.time <= timeF)]
-df_rates = df_rates[(df_rates.time >= time0) & (df_rates.time <= timeF)]
-rule = df_rates.duplicated(subset=["time"])
+#df_rates_tmp.to_csv("df_rates_tmp.csv",  sep='\t')
+rule = df_rates_tmp.duplicated(subset=["time"])
 count = (rule == False).sum()
 print("Duplicates:", rule.sum())
-df_rates_noduplicates = df_rates[rule == False]
-#print df_rates_noduplicates
-
+df_rates_noduplicates = df_rates_tmp[rule == False]
 
 # In[30]:
 
@@ -666,7 +674,7 @@ def plot_rate_vs_ls(df, run, x_val, y_val, z_val, x_err, y_err, title_x, title_y
     plt.legend(loc="best")
     plt.errorbar(df_temp[x_val], df_temp[y_val], xerr=x_err, yerr=df_temp[y_err], fmt='ro', ecolor='r')
     plt.title(title)
-    plt.show();
+    save_plot(plt);
 
 title = "Rates for Fill/Run/Board: "+str(int_lumi2["fill"].iloc[0])+" / "+str(boundaries["run"].iloc[3])+" / YB+1_S4"
 
@@ -796,7 +804,7 @@ def plot_rate_vs_ls_2(df1, df2, x_val, y_val, x_err, y_err, title_x, title_y, ti
     plt.errorbar(tmp[x_val], tmp["rate"], xerr=x_err, yerr=tmp["err"], fmt='b+', ecolor='b')
     plt.title(title)
     plt.legend(loc="best")
-    plt.show();
+    save_plot(plt);
 
 title = "Fill/Run/Board: "+str(int_lumi2["fill"].iloc[0])+" / "+str(boundaries["run"].iloc[3])+" / YB+1_S4"
 
@@ -876,7 +884,7 @@ def plot_scatter_2(df, arg, wheel):
     plt.colorbar(im, cax=cax, ticks=[np.min(np.nan_to_num(mat)), np.max(np.nan_to_num(mat))])
     title = "Wheel: "+wheel_s
     plt.title(title, loc="right")   
-    plt.show()
+    save_plot(plt)
 
 
 # In[396]:
@@ -1306,7 +1314,7 @@ plt.legend(loc='best')
 plt.ylabel('Frequency')
 plt.xlabel('Score')
 plt.axvline(0.5, color='k', linestyle='dashed', linewidth=1)
-plt.show()
+save_plot(plt)
 
 
 # In[367]:
@@ -1507,7 +1515,7 @@ def plot_training_loss(data, title):
     plt.plot(data["val_loss"])
     plt.legend(["Train", "Validation"], loc="upper right")
     plt.yscale("log")
-    plt.show();
+    save_plot(plt);
 
 plot_training_loss(history_ann_1.history, "SNN (1 layers) model loss")
 plot_training_loss(history_ann_2.history, "DNN (2 layers) model loss")
@@ -1550,7 +1558,7 @@ plt.legend(loc='best')
 plt.ylabel('Frequency')
 plt.xlabel('Score')
 plt.axvline(0.5, color='k', linestyle='dashed', linewidth=1)
-plt.show()
+save_plot(plt)
 
 
 # In[100]:
@@ -1577,7 +1585,7 @@ def get_roc_curve(test_df, models, working_point=None):
     plt.legend(loc='best')
     plt.ylabel('True positive rate')
     plt.xlabel('False positive rate')
-    plt.show();
+    save_plot(plt);
 
 
 # In[101]:
@@ -1658,7 +1666,7 @@ plt.legend(loc='best')
 plt.ylabel('Frequency')
 plt.xlabel('Score')
 plt.axvline(0.03, color='k', linestyle='dashed', linewidth=1)
-plt.show()
+save_plot(plt)
 
 
 # Setting thresholds:
@@ -1852,7 +1860,7 @@ def plot_scatter(df, run, wheel, ls_min, ls_max):
     plt.colorbar(im, cax=cax, ticks=[np.min(np.nan_to_num(mat)), np.max(np.nan_to_num(mat))])
     title = "Run: "+run_s+", Wheel: "+wheel_s+", LS: "+ls_s
     plt.title(title, loc="right")   
-    plt.show()
+    save_plot(plt)
 
 
 # In[ ]:
@@ -1901,7 +1909,7 @@ def plotFpVsLs(run, wheel, sector, station, title, df, algo, threshold, log, bou
     plt.xlabel('LS')
     plt.grid(True)
     #plt.plot([bound, bound], [0, 100], color='r', linestyle='--', linewidth=2)
-    plt.show()
+    save_plot(plt)
     return n
 
 
@@ -2170,7 +2178,7 @@ def plot_perf(der, rel, xaxis, yaxis, x1, x2, y1, y2, logx, logy):
     plt.legend(loc='best')
     #plt.ylabel('Inertia')
     plt.xlabel(xaxis)
-    plt.show()
+    save_plot(plt)
     
 plot_perf(fp_rate, tp_rate, 'Number of neighbors', '', 0, 2000, 0.01, 1.1, False, True)
 
@@ -2228,7 +2236,7 @@ plt.legend(loc='best')
 plt.ylabel('Frequency')
 plt.xlabel('Score')
 plt.axvline(0.0, color='k', linestyle='dashed', linewidth=1)
-plt.show()
+save_plot(plt)
 
 
 # In[611]:
@@ -2363,7 +2371,7 @@ def plotDist(means, der, rel):
     plt.legend(loc='best')
     #plt.ylabel('Inertia')
     plt.xlabel('Number of clusters')
-    plt.show()
+    save_plot(plt)
     
 plotDist(means, der, rel)
 
@@ -2393,7 +2401,7 @@ plt.title("K-Means cluster distribution")
 plt.legend(loc='best')
 plt.ylabel('Frequency')
 plt.xlabel('Cluster')
-plt.show()
+save_plot(plt)
 
 
 # The minimal distance is used to assign the data to the clusters. Visualize the average distance within a cluster:
@@ -2433,7 +2441,7 @@ plt.title("K-Means average distance distribution")
 plt.legend(loc='best')
 plt.ylabel('Frequency')
 plt.xlabel('Average distance within clusters')
-plt.show()
+save_plot(plt)
 
 
 # Predicting the distances of the test sample data with respect to the clusters and plotting the minimum distance for each point (dividing anomalies and normalies):
@@ -2463,7 +2471,7 @@ plt.title("K-Means average distance distribution")
 plt.legend(loc='best')
 plt.ylabel('Frequency')
 plt.xlabel('Distance to the closest cluster')
-plt.show()
+save_plot(plt)
 
 
 # In[732]:
@@ -2738,7 +2746,7 @@ plt.title("K-Means average distance distribution")
 plt.legend(loc='best')
 plt.ylabel('Frequency')
 plt.xlabel('Distance to the closest cluster')
-plt.show()
+save_plot(plt)
 
 
 # In[333]:
@@ -2822,7 +2830,7 @@ plt.legend(loc='best')
 plt.ylabel('Frequency')
 plt.xlabel('Score')
 plt.axvline(0.0, color='k', linestyle='dashed', linewidth=1)
-plt.show()
+save_plot(plt)
 
 
 # In[ ]:
