@@ -71,7 +71,7 @@ matplotlib.rcParams["legend.fontsize"] = 14
 
 import os
 cwd = os.getcwd()
-print cwd
+print(cwd)
 
 
 # In[5]:
@@ -93,7 +93,7 @@ runs_ref = [297219, 299481, 300122, 300155, 300157, 300576, 300636, 300785, 3019
 df_rates = pd.DataFrame()
 int_lumi2 = pd.DataFrame()
 for run in runs:
-    print("Loading %s" % run)
+    print(("Loading %s" % run))
     path = "%s/lumi_%s.csv" % (lumi_directory, run)
     int_lumi2 = int_lumi2.append(pd.read_csv(path,
         names=["runfill", "ls", "time", "beamstatus", "energy", "delivered",\
@@ -111,7 +111,7 @@ print("Done.")
 
 
 for run in runs_ref:
-    print("Loading %s" % run)
+    print(("Loading %s" % run))
     path = "%s/lumi_%s.csv" % (lumi_directory, run)
     int_lumi2 = int_lumi2.append(pd.read_csv(path,
         names=["runfill", "ls", "time", "beamstatus", "energy", "delivered",\
@@ -146,7 +146,7 @@ df_certified['run'], df_certified['fill'] = df_certified['runfill'].str.split(':
 
 
 nLS = 1000
-print ("Number of runs with more than %s LS': %i" % (nLS, len(df_certified[df_certified.ncms > nLS].ncms.values)))
+print(("Number of runs with more than %s LS': %i" % (nLS, len(df_certified[df_certified.ncms > nLS].ncms.values))))
 df_certified.ncms = df_certified.ncms.astype('int')
 df_certified.run = df_certified.run.astype('int')
 
@@ -160,7 +160,7 @@ plt.xlabel('Number of LS')
 plt.legend(loc='best')
 plt.show()
 
-print "Runs with more than 1000 LS':", df_certified[df_certified.ncms > nLS].run.values
+print("Runs with more than 1000 LS':", df_certified[df_certified.ncms > nLS].run.values)
 
 
 # # Luminosity section <a class="anchor" id="second-bullet"></a>
@@ -235,7 +235,7 @@ for i in runs+runs_ref:
     start_ls =  start_ls.reset_index(drop=True)
     end_ls =  end_ls.reset_index(drop=True)
     nLS = int(start_ls.iloc[-1]) - int(start_ls.iloc[0]) + 1
-    print i, start.iloc[0], start.iloc[-1], start_ls.iloc[0], start_ls.iloc[-1], nLS
+    print(i, start.iloc[0], start.iloc[-1], start_ls.iloc[0], start_ls.iloc[-1], nLS)
     boundaries = boundaries.append({"run": i, "start": start.iloc[0], "end": start.iloc[-1], 
                                    "ls_start": start_ls.iloc[0], "ls_end": start_ls.iloc[-1],\
                                     "nLS": nLS}, ignore_index = True)
@@ -259,7 +259,7 @@ int_lumi2.index = pd.RangeIndex(len(int_lumi2.index))
 # In[19]:
 
 
-print len(int_lumi2.index)
+print(len(int_lumi2.index))
 
 
 # Filling end time column:
@@ -455,12 +455,12 @@ df_rates_backup = df_rates.copy()
 
 time0 = boundaries["start"].iloc[0]
 timeF = boundaries["end"].iloc[-1]
-print time0, timeF
+print(time0, timeF)
 #print df_rates[(df_rates.time >= time0) & (df_rates.time <= timeF)]
 df_rates = df_rates[(df_rates.time >= time0) & (df_rates.time <= timeF)]
 rule = df_rates.duplicated(subset=["time"])
 count = (rule == False).sum()
-print "Duplicates:", rule.sum()
+print("Duplicates:", rule.sum())
 df_rates_noduplicates = df_rates[rule == False]
 #print df_rates_noduplicates
 
@@ -468,7 +468,7 @@ df_rates_noduplicates = df_rates[rule == False]
 # In[ ]:
 
 
-print len(df_rates_noduplicates)
+print(len(df_rates_noduplicates))
 
 
 # Assigning the LS and the inst. lumi. to the measurements for the selected board:
@@ -491,7 +491,7 @@ def assignLS(df1, df2, boundaries):
             if((time1 >= df2["time"].loc[i]) & (time1 < df2["time_end"].loc[i])):
                 #print time1, df2["time"].loc[i], df2["time_end"].loc[i]
                 if(j%1000 == 0): 
-                    print j
+                    print(j)
                 j = j + 1
                 ls = df2["ls_start"].loc[i]
                 lumi = df2["delivered"].loc[i]
@@ -511,7 +511,7 @@ df_rates_noduplicates = temp
 
 
 df_rates_noduplicates = df_rates_noduplicates[df_rates_noduplicates["ls"] > 0]
-print len(df_rates_noduplicates)
+print(len(df_rates_noduplicates))
 
 
 # Save in a csv file:
@@ -540,7 +540,7 @@ def assignLS_ext(df1, df2):
     indexes = []
     for index in df2.index:
         if index%10000 == 0:
-            print index
+            print(index)
         time = df2["time"].loc[index]
         ls = df2["ls"].loc[index]
         lumi = df2["lumi"].loc[index]
@@ -585,7 +585,7 @@ df_rates = df_rates[df_rates.ls > 0]
 
 df_boards = df_rates.copy()
 df_boards = df_boards.groupby(['board']).size().reset_index(name='counts')
-print len(df_boards)
+print(len(df_boards))
 #print df_boards
 
 
@@ -673,9 +673,9 @@ for i in list(df_rates):
 # In[152]:
 
 
-print df_rates.isnull().values.any()
+print(df_rates.isnull().values.any())
 null_columns=df_rates.columns[df_rates.isnull().any()]
-print(df_rates[df_rates.isnull().any(axis=1)][null_columns].head())
+print((df_rates[df_rates.isnull().any(axis=1)][null_columns].head()))
 #df_rates = df_rates.fillna(0)
 #print(df_rates[df_rates.isnull().any(axis=1)][null_columns].head())
 
@@ -698,7 +698,7 @@ print(df_rates[df_rates.isnull().any(axis=1)][null_columns].head())
 # In[155]:
 
 
-print len(df_rates)
+print(len(df_rates))
 
 
 # Uncomment to check just one case case:
@@ -743,7 +743,7 @@ def plot_rate_vs_ls(df, run, x_val, y_val, z_val, x_err, y_err, title_x, title_y
             val1 = df_temp[rule & rule2][x_val]
             #print val1
             val2 = df_temp[rule & rule2][y_val]
-            print "Linear correlation:", stats.pearsonr(val1.values, val2.values)
+            print("Linear correlation:", stats.pearsonr(val1.values, val2.values))
             coeff, pcov = np.polyfit(val1, val2, 1, cov = True)
             #print pcov
             perr3 = np.sqrt(np.diag(pcov))
@@ -752,8 +752,8 @@ def plot_rate_vs_ls(df, run, x_val, y_val, z_val, x_err, y_err, title_x, title_y
             p = np.poly1d(coeff)
             xp = np.linspace(3000, 16000, 1000)
             _ = plt.plot(xp, p(xp), '-')
-            print "Linear fit parameters:", coeff
-            print "Paramenters uncertainty:", perr3
+            print("Linear fit parameters:", coeff)
+            print("Paramenters uncertainty:", perr3)
             y_low = calc_bounds(val1, coeff[0], coeff[1], perr3[0], perr3[1], "low")
             y_high = calc_bounds(val1, coeff[0], coeff[1], perr3[0], perr3[1], "high")
             plt.plot(val1, y_low, 'r-')
@@ -783,7 +783,7 @@ plot_rate_vs_ls(df_rates, [306125], "lumi", "RPC4", "YB-1_S4", 0, "errRPC4",    
 # In[159]:
 
 
-print len(df_rates)
+print(len(df_rates))
 algos = ['RPC1', 'RPC2', 'RPC3', 'RPC4']
 df_rates_new_2 = pd.DataFrame(columns=['run', 'group', 'board', 'wheel', 'sector', 'ls',                                     'lumi', 'errLumi', 'rate', 'err', 'system', 'station'])
 
@@ -806,7 +806,7 @@ for i in algos:
     #print temp.columns
     df_rates_new_2 = pd.concat([df_rates_new_2, temp], ignore_index=True)
 
-print len(df_rates_new_2)
+print(len(df_rates_new_2))
 
 
 # Adding the lumi/rate ratio:
@@ -818,33 +818,33 @@ df_rates_new_2["CS"] = -1
 df_rates_new_2["errCS"] = -1
 
 df_rates_new_2["CS"] = df_rates_new_2["rate"]/df_rates_new_2["lumi"]
-print "Number of NaN's in CS before:"
-print len(df_rates_new_2["CS"][df_rates_new_2["CS"].isnull() == True])
-print "Number of Inf's in CS before:"
-print len(df_rates_new_2["CS"][np.isinf(df_rates_new_2["CS"])])
+print("Number of NaN's in CS before:")
+print(len(df_rates_new_2["CS"][df_rates_new_2["CS"].isnull() == True]))
+print("Number of Inf's in CS before:")
+print(len(df_rates_new_2["CS"][np.isinf(df_rates_new_2["CS"])]))
 
 df_rates_new_2["CS"] = df_rates_new_2["CS"].replace([np.inf, -np.inf], np.nan)
 df_rates_new_2["CS"] = df_rates_new_2["CS"].fillna(-1)
 
-print "Number of NaN's in CS after:"
-print len(df_rates_new_2["CS"][df_rates_new_2["CS"].isnull() == True])
-print "Number of Inf's in CS after:"
-print len(df_rates_new_2["CS"][np.isinf(df_rates_new_2["CS"])])
+print("Number of NaN's in CS after:")
+print(len(df_rates_new_2["CS"][df_rates_new_2["CS"].isnull() == True]))
+print("Number of Inf's in CS after:")
+print(len(df_rates_new_2["CS"][np.isinf(df_rates_new_2["CS"])]))
 
 df_rates_new_2["errCS"] = (1/df_rates_new_2["lumi"])*np.sqrt(df_rates_new_2["err"]**2 + df_rates_new_2["CS"]**2 * df_rates_new_2["errLumi"]**2)
 
-print "Number of NaN's in errCS before:"
-print len(df_rates_new_2["errCS"][df_rates_new_2["errCS"].isnull() == True])
-print "Number of Inf's in errCS before:"
-print len(df_rates_new_2["errCS"][np.isinf(df_rates_new_2["errCS"])])
+print("Number of NaN's in errCS before:")
+print(len(df_rates_new_2["errCS"][df_rates_new_2["errCS"].isnull() == True]))
+print("Number of Inf's in errCS before:")
+print(len(df_rates_new_2["errCS"][np.isinf(df_rates_new_2["errCS"])]))
 
 df_rates_new_2["errCS"] = df_rates_new_2["errCS"].replace([np.inf, -np.inf], np.nan)
 df_rates_new_2["errCS"] = df_rates_new_2["errCS"].fillna(-1)
 
-print "Number of NaN's in errCS after:"
-print len(df_rates_new_2["errCS"][df_rates_new_2["errCS"].isnull() == True])
-print "Number of Inf's in errCS after:"
-print len(df_rates_new_2["errCS"][np.isinf(df_rates_new_2["errCS"])])
+print("Number of NaN's in errCS after:")
+print(len(df_rates_new_2["errCS"][df_rates_new_2["errCS"].isnull() == True]))
+print("Number of Inf's in errCS after:")
+print(len(df_rates_new_2["errCS"][np.isinf(df_rates_new_2["errCS"])]))
 
 
 # In[161]:
@@ -1083,7 +1083,7 @@ def plot_ratio_vs_ls(df, run, x_val, y_val, z_val, x_err, y_err, title_x, title_
         newstr = opt[i].replace("o", "")
         plt.errorbar(df_temp[rule][x_val], df_temp[rule]["ratio"], xerr=x_err,        yerr=df_temp[rule]["errRatio"], fmt=opt[i], ecolor=newstr, label=str(run[i]))
         
-    print "Linear fit for the reference run:", inter[0]
+    print("Linear fit for the reference run:", inter[0])
     plt.legend(loc="best")
     plt.title(title)
     plt.show()
@@ -1097,7 +1097,7 @@ def plot_ratio_vs_ls(df, run, x_val, y_val, z_val, x_err, y_err, title_x, title_
         #range_ = range(3, 4)
 for i in [-2, -1, 0, +1, +2]:
     for j in range(1, 13):
-        range_ = range(1, 5)
+        range_ = list(range(1, 5))
         for k in range_:
 
             if (i > 0):
@@ -1110,7 +1110,7 @@ for i in [-2, -1, 0, +1, +2]:
             
             title = board + "_RB" + str(k)
                 
-            print title
+            print(title)
             
             fmin = df_rates_new_2[(df_rates_new_2.station == k) & (df_rates_new_2.board == board)]["fmin"].iloc[0]
             fmax = df_rates_new_2[(df_rates_new_2.station == k) & (df_rates_new_2.board == board)]["fmax"].iloc[0]
@@ -1141,7 +1141,7 @@ for i in [-2, -1, 0, +1, +2]:
                 df_rates_new_2.loc[m, "rate_mid"] = x*a + b #central value
                 df_rates_new_2.loc[m, "rate_low"] = x*(a - s_a) + (b - s_b) #lower limit
                 df_rates_new_2.loc[m, "rate_high"] = x*(a + s_a) + (b + s_b) #upper limit
-            print "----------------------------------------------------------------------------------------------------------------"
+            print("----------------------------------------------------------------------------------------------------------------")
 
 
 # In[174]:
@@ -1180,8 +1180,8 @@ def plot_scatter(df, run, wheel, ls_min, ls_max):
         temp = temp[(temp["averageLS"] >= ls_min) & (temp["averageLS"] <= ls_max)]
         ls_s = " ["+str(ls_min)+", "+str(ls_max)+"]"
     mat = get_matrix(temp)
-    print mat
-    print mat.sum()
+    print(mat)
+    print(mat.sum())
 
     plt.figure()
     
@@ -1254,7 +1254,7 @@ temp = df_rates_new_2.groupby(["wheel", "sector", "station", "run", "system"])[[
 # In[180]:
 
 
-print df_rates_new_2.columns
+print(df_rates_new_2.columns)
 
 
 # ## Creating train and test samples:
@@ -1274,7 +1274,7 @@ normalies = anomalies.copy()
 # In[221]:
 
 
-print len(normalies), len(anomalies)
+print(len(normalies), len(anomalies))
 
 
 # In[222]:
@@ -1351,36 +1351,36 @@ anomalies = temp
 
 
 rule = (normalies["wheel"] == -1) & (normalies["sector"] == 3) &(normalies["station"] == 3) & (normalies["run"] == 297180)
-print "Normal chamber:"
-print normalies[rule]["score"].iloc[0]
+print("Normal chamber:")
+print(normalies[rule]["score"].iloc[0])
 
 rule = (normalies["wheel"] == -1) & (normalies["sector"] == 4) &(normalies["station"] == 3) & (normalies["run"] == 297180)
-print "Anomalous chamber:"
-print normalies[rule]["score"].iloc[0]
+print("Anomalous chamber:")
+print(normalies[rule]["score"].iloc[0])
 
 
 # In[227]:
 
 
 rule = (anomalies["wheel"] == -1) & (anomalies["sector"] == 3) &(anomalies["station"] == 3) & (normalies["run"] == 297180)
-print "Normal chamber:"
-print anomalies[rule]["score"].iloc[0]
+print("Normal chamber:")
+print(anomalies[rule]["score"].iloc[0])
 
 rule = (anomalies["wheel"] == -1) & (anomalies["sector"] == 4) &(anomalies["station"] == 3) & (normalies["run"] == 297180)
-print "Anomalous chamber:"
-print anomalies[rule]["score"].iloc[0]
+print("Anomalous chamber:")
+print(anomalies[rule]["score"].iloc[0])
 
 
 # In[228]:
 
 
 rule = (anomalies["wheel"] == -1) & (anomalies["sector"] == 3) &(anomalies["station"] == 3) & (normalies["run"] == 306125)
-print "Normal chamber:"
-print anomalies[rule]["score"].iloc[0]
+print("Normal chamber:")
+print(anomalies[rule]["score"].iloc[0])
 
 rule = (anomalies["wheel"] == -1) & (anomalies["sector"] == 4) &(anomalies["station"] == 3) & (normalies["run"] == 306125)
-print "Anomalous chamber:"
-print anomalies[rule]["score"].iloc[0]
+print("Anomalous chamber:")
+print(anomalies[rule]["score"].iloc[0])
 
 
 # In[229]:
@@ -1456,8 +1456,8 @@ normalies = normalies[normalies.run != 297181]
 rng = np.random.RandomState(0)
 anomalies = anomalies[(anomalies.score == 1)]
 normalies = normalies[(normalies.score == -1)]
-print("%s faults and %s good samples. In total: %s." %
-      (len(anomalies), len(normalies), len(anomalies) + len(normalies)))
+print(("%s faults and %s good samples. In total: %s." %
+      (len(anomalies), len(normalies), len(anomalies) + len(normalies))))
 
 anomalies_train, anomalies_test = train_test_split(anomalies, test_size = 0.2, random_state=rng)
 normalies_train, normalies_test = train_test_split(normalies, test_size = 0.2, random_state=rng)
@@ -1475,10 +1475,10 @@ neural_val = pd.concat([neural_anomalies_val, neural_normalies_val])
 # In[236]:
 
 
-print("Number of anomalies in the train set: %s" % len(anomalies_train))
-print("Number of normal in the train set: %s" % len(normalies_train))
-print("Number of anomalies in the test set: %s" % len(anomalies_test))
-print("Number of normal in the test set: %s" % len(normalies_test))
+print(("Number of anomalies in the train set: %s" % len(anomalies_train)))
+print(("Number of normal in the train set: %s" % len(normalies_train)))
+print(("Number of anomalies in the test set: %s" % len(anomalies_test)))
+print(("Number of normal in the test set: %s" % len(normalies_test)))
 
 
 # In[237]:
@@ -1519,7 +1519,7 @@ cw = class_weight.compute_class_weight("balanced",
                                        np.unique(np.argmax(train_y, axis=1)),
                                        np.argmax(train_y, axis=1))
 cw = {0: cw[0], 1: cw[1]}
-print cw
+print(cw)
 
 
 # ## Simple test
@@ -1647,7 +1647,7 @@ def plot_confusion_matrix(cm, classes,
 
     fmt = '.2f' if normalize else 'd'
     thresh = cm.max() / 2.
-    for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
+    for i, j in itertools.product(list(range(cm.shape[0])), list(range(cm.shape[1]))):
         plt.text(j, i, format(cm[i, j], fmt),
                  horizontalalignment="center",
                  color="white" if cm[i, j] > thresh else "black")
@@ -1753,9 +1753,9 @@ def benchmark(y_true, y_score, treshold):
     sensitivity = round(float(tp)/(tp+fn), 4)
     specificity = round(float(tn)/(tn+fp), 4)
 
-    print("Model accuracy: %s" % round(accuracy_score(y_true, y_pred), 4))
-    print("Model sensitivity: %s" % sensitivity)
-    print("Model specificity: %s" % specificity)
+    print(("Model accuracy: %s" % round(accuracy_score(y_true, y_pred), 4)))
+    print(("Model sensitivity: %s" % sensitivity))
+    print(("Model specificity: %s" % specificity))
 
     return specificity, sensitivity
 
@@ -1820,7 +1820,7 @@ layers_test["cae_score"] = np.sum(abs(test_x - cae_model.predict(np.array(test_x
 # In[316]:
 
 
-print "AE:"
+print("AE:")
 specificity_cae, sensitivity_cae = benchmark(layers_test["score"], layers_test["cae_score"], 0.035)
 
 
@@ -1857,7 +1857,7 @@ plot_confusion_matrix(cnf_matrix, classes=["normaly","anomaly"], normalize=True,
 # In[ ]:
 
 
-print "Number of FPs for the AE:", len(layers_test[(layers_test["score"] == -1) &                                                   (layers_test["cae_score"] > th_ae)])
+print("Number of FPs for the AE:", len(layers_test[(layers_test["score"] == -1) &                                                   (layers_test["cae_score"] > th_ae)]))
 
 
 # In[ ]:
@@ -1882,8 +1882,8 @@ def count_fp(df, dis_nn, th, filt):
 num_fp_ann, fp_ann = count_fp(layers_test, "ann_score_4", th_dnn, False)
 num_fp_cae, fp_cae = count_fp(layers_test, "cae_score", th_ae, True)
 
-print "Number of chambers with false positives DNN:", num_fp_ann
-print "Number of chambers with false positives AE:", num_fp_cae
+print("Number of chambers with false positives DNN:", num_fp_ann)
+print("Number of chambers with false positives AE:", num_fp_cae)
 fp_cae.set_index("name",drop=True,inplace=True)
 fp_ann.set_index("name",drop=True,inplace=True)
 
@@ -1983,7 +1983,7 @@ def cross_validation_split(train_X, train_y, clf_i, param_grid, return_params=Fa
 
 param_grid = [{"max_samples": [100, 1000],
                "n_estimators": [10, 100],
-               "contamination": np.array(range(4, 13, 1))/100.0}]
+               "contamination": np.array(list(range(4, 13, 1)))/100.0}]
 
 ifparams = cross_validation_split(np.vstack(layers_train["content_scaled"].values),
                                  -layers_train["score"].astype(int),
@@ -2114,8 +2114,8 @@ def plot_perf(der, rel, xaxis, yaxis, x1, x2, y1, y2, logx, logy):
         ax.set_yscale('log')
     if logx:
         ax.set_xscale('log')
-    a, b = zip(*der)
-    c, d = zip(*rel)
+    a, b = list(zip(*der))
+    c, d = list(zip(*rel))
     plt.ylim(y1, y2)
     plt.xlim(x1, x2)
     plt.plot(a, b, "ro-", alpha=0.5, label = "False positive rate")
@@ -2140,7 +2140,7 @@ plot_perf(fp_rate, tp_rate, 'Number of neighbors', '', 0, 2000, 0.01, 1.1, False
 
 threshold = 0.0
 result_lof = []
-for i in np.array(range(1, 500, 5))/1000.0:
+for i in np.array(list(range(1, 500, 5)))/1000.0:
     lofclf = LocalOutlierFactor(n_neighbors=1205, contamination=i)#It has to be a odd number
     layers_train["lof_score"] = -lofclf.fit_predict(np.vstack(layers_train["content_scaled"].values))
     y_pred = 2*(layers_train["lof_score"] > threshold)-1
@@ -2220,7 +2220,7 @@ plotFpVsLs(306126, 0, 0, 0, "Distribution of false positives: LOF, ", layers_tra
 
 means = []
 for i in range(1, 300, 50):
-    print i
+    print(i)
     k_means = cluster.KMeans(n_clusters=i)
     k_means.fit(np.vstack(normalies_train["content"].values))
     means.append([i, k_means.inertia_])
@@ -2230,7 +2230,7 @@ for i in range(1, 300, 50):
 
 
 for i in range(300, 500, 100):
-    print i
+    print(i)
     k_means = cluster.KMeans(n_clusters=i)
     k_means.fit(np.vstack(normalies_train["content"].values))
     means.append([i, k_means.inertia_])
@@ -2240,7 +2240,7 @@ for i in range(300, 500, 100):
 
 
 for i in range(500, 1000, 200):
-    print i
+    print(i)
     k_means = cluster.KMeans(n_clusters=i)
     k_means.fit(np.vstack(normalies_train["content"].values))
     means.append([i, k_means.inertia_])
@@ -2250,7 +2250,7 @@ for i in range(500, 1000, 200):
 
 
 for i in range(1000, 2000, 500):
-    print i
+    print(i)
     k_means = cluster.KMeans(n_clusters=i)
     k_means.fit(np.vstack(normalies_train["content"].values))
     means.append([i, k_means.inertia_])
@@ -2260,7 +2260,7 @@ for i in range(1000, 2000, 500):
 
 
 for i in range(2, 10, 2):
-    print i
+    print(i)
     k_means = cluster.KMeans(n_clusters=i)
     k_means.fit(np.vstack(normalies_train["content"].values))
     means.append([i, k_means.inertia_])
@@ -2280,7 +2280,7 @@ means = sorted(means, key=getKey)
 
 der = []
 for i in range(0, len(means)-1):
-    x, y = zip(*means)
+    x, y = list(zip(*means))
     a = np.sqrt(y[i]/len(normalies_train))
     b = np.sqrt(y[i+1]/len(normalies_train))
     delta = (a-b)/a
@@ -2292,7 +2292,7 @@ for i in range(0, len(means)-1):
 
 rel = []
 for i in range(0, len(means)-1):
-    x, y = zip(*means)
+    x, y = list(zip(*means))
     a = np.sqrt(y[i]/len(normalies_train))
     b = np.sqrt(y[i+1]/len(normalies_train))
     delta = (a-b)*100000/y[0]
@@ -2306,9 +2306,9 @@ def plotDist(means, der, rel):
     fig, ax = plt.subplots()
     ax.set_yscale('log')
     ax.set_xscale('log')
-    x, y = zip(*means)
-    a, b = zip(*der)
-    c, d = zip(*rel)
+    x, y = list(zip(*means))
+    a, b = list(zip(*der))
+    c, d = list(zip(*rel))
     plt.ylim(0.000000001, 200000.)
     plt.xlim(1, 2000)
     plt.plot(x, np.sqrt(np.array(y)/len(normalies_train)), "bo-", alpha=0.5, label="Average distance")
