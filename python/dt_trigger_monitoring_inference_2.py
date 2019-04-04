@@ -77,7 +77,7 @@ rates_directory = "./rates"
 df_rates = pd.DataFrame()
 int_lumi2 = pd.DataFrame()
 for run in runs:
-    print("Loading %s" % run)
+    print(("Loading %s" % run))
     path = "%s/lumi_%s.csv" % (lumi_directory, run)
     int_lumi2 = int_lumi2.append(pd.read_csv(path,
         names=["runfill", "ls", "time", "beamstatus", "energy", "delivered",\
@@ -163,7 +163,7 @@ for i in runs:
     start_ls =  start_ls.reset_index(drop=True)
     end_ls =  end_ls.reset_index(drop=True)
     nLS = int(start_ls.iloc[-1]) - int(start_ls.iloc[0]) + 1
-    print i, start.iloc[0], start.iloc[-1], start_ls.iloc[0], start_ls.iloc[-1], nLS
+    print((i, start.iloc[0], start.iloc[-1], start_ls.iloc[0], start_ls.iloc[-1], nLS))
     boundaries = boundaries.append({"run": i, "start": start.iloc[0], "end": start.iloc[-1], 
                                    "ls_start": start_ls.iloc[0], "ls_end": start_ls.iloc[-1], "nLS": nLS}, 
                                    ignore_index = True)
@@ -180,7 +180,7 @@ int_lumi2.index = pd.RangeIndex(len(int_lumi2.index))
 # In[12]:
 
 
-print len(int_lumi2.index)
+print((len(int_lumi2.index)))
 
 
 # Filling end time column:
@@ -367,12 +367,12 @@ df_rates_backup = df_rates.copy()
 
 time0 = boundaries["start"].iloc[0]
 timeF = boundaries["end"].iloc[-1]
-print time0, timeF
+print((time0, timeF))
 #print df_rates[(df_rates.time >= time0) & (df_rates.time <= timeF)]
 df_rates = df_rates[(df_rates.time >= time0) & (df_rates.time <= timeF)]
 rule = df_rates.duplicated(subset=["time"])
 count = (rule == False).sum()
-print "Duplicates:", rule.sum()
+print(("Duplicates:", rule.sum()))
 df_rates_noduplicates = df_rates[rule == False]
 #print df_rates_noduplicates
 
@@ -380,7 +380,7 @@ df_rates_noduplicates = df_rates[rule == False]
 # In[27]:
 
 
-print len(df_rates_noduplicates)
+print((len(df_rates_noduplicates)))
 
 
 # Assigning the LS and the inst. lumi. to the measurements for the selected board:
@@ -403,7 +403,7 @@ def assignLS(df1, df2, boundaries):
             if((time1 >= df2["time"].loc[i]) & (time1 < df2["time_end"].loc[i])):
                 #print time1, df2["time"].loc[i], df2["time_end"].loc[i]
                 if(j%1000 == 0): 
-                    print j
+                    print(j)
                 j = j + 1
                 ls = df2["ls_start"].loc[i]
                 lumi = df2["delivered"].loc[i]
@@ -423,7 +423,7 @@ df_rates_noduplicates = temp
 
 
 df_rates_noduplicates = df_rates_noduplicates[df_rates_noduplicates["ls"] > 0]
-print len(df_rates_noduplicates)
+print((len(df_rates_noduplicates)))
 
 
 # Save in a csv file:
@@ -452,7 +452,7 @@ def assignLS_ext(df1, df2):
     indexes = []
     for index in df2.index:
         if index%10000 == 0:
-            print index
+            print(index)
         time = df2["time"].loc[index]
         ls = df2["ls"].loc[index]
         lumi = df2["lumi"].loc[index]
@@ -516,7 +516,7 @@ df_rates.to_csv("df_rates_issues.csv", sep='\t')
 
 df_boards = df_rates.copy()
 df_boards = df_boards.groupby(['board']).size().reset_index(name='counts')
-print len(df_boards)
+print((len(df_boards)))
 #print df_boards
 
 
@@ -592,11 +592,11 @@ for i in list(df_rates):
 # In[42]:
 
 
-print df_rates.isnull().values.any()
+print((df_rates.isnull().values.any()))
 null_columns=df_rates.columns[df_rates.isnull().any()]
-print(df_rates[df_rates.isnull().any(axis=1)][null_columns].head())
+print((df_rates[df_rates.isnull().any(axis=1)][null_columns].head()))
 df_rates = df_rates.fillna(0)
-print(df_rates[df_rates.isnull().any(axis=1)][null_columns].head())
+print((df_rates[df_rates.isnull().any(axis=1)][null_columns].head()))
 
 
 # In[43]:
@@ -617,7 +617,7 @@ print(df_rates[df_rates.isnull().any(axis=1)][null_columns].head())
 # In[45]:
 
 
-print len(df_rates)
+print((len(df_rates)))
 
 
 # Uncomment to check just one case:
@@ -673,9 +673,9 @@ ratio = pd.DataFrame(columns=["wheel", "sector", "station", "ratio", "ref", "ano
 for i in [-2, -1, 0, +1, +2]:
     for j in range(1, 13):
         if ((j == 4) | (j == 10)):
-            range_ = range(1, 6)
+            range_ = list(range(1, 6))
         else:
-            range_ = range(1, 5)
+            range_ = list(range(1, 5))
         for k in range_:
 
             if (i > 0):
@@ -693,7 +693,7 @@ for i in [-2, -1, 0, +1, +2]:
 
             ratio = ratio.append({"wheel": i, "sector": j, "station": k, "ratio": c, "ref": b,                                  "anomal": a, "cs_norm": 1/b, "cs_anomal": 1/a}, ignore_index = True)
             
-            print "Anomalous CS:", a, ", Normal CS:", b, ", Ratio:", c
+            print(("Anomalous CS:", a, ", Normal CS:", b, ", Ratio:", c))
             
 
 
@@ -706,7 +706,7 @@ for i in [-2, -1, 0, +1, +2]:
 (a2, b2, c2) = plot_ratio_vs_ls(df_rates, [306125, 306125], "lumi", "DT3", "YB-1_S3", 0,                            "errDT3", r"Inst. Lumi. [$\times10^{30}$ Hz/cm$^2$]", 
                             r"Cross-section [$\times10^{-30}$ cm$^{2}$]", "W-1_S3_MB3",\
                                 ["ro", "bo"], False)
-print "Fit W+1_S4_MB3: ", a1, ", Fit W-1_S3_MB3:", a2, ", Ratio:", abs(a1-a2)/a2
+print(("Fit W+1_S4_MB3: ", a1, ", Fit W-1_S3_MB3:", a2, ", Ratio:", abs(a1-a2)/a2))
 value = abs(a1-a2)/a2
 
 
@@ -766,10 +766,10 @@ plt.show()
 # In[52]:
 
 
-print "Total number of chambers:" ,len(ratio["ratio"].values)
+print(("Total number of chambers:" ,len(ratio["ratio"].values)))
 count = np.where(ratio["ratio"].values > value)
-print "Chambers over threshold: ", len(count[0])
-print "Fraction of chambers over threshold:", float(len(count[0])) / len(ratio["ratio"].values)
+print(("Chambers over threshold: ", len(count[0])))
+print(("Fraction of chambers over threshold:", float(len(count[0])) / len(ratio["ratio"].values)))
 
 
 # In[53]:
@@ -800,7 +800,7 @@ plt.show()
 # In[54]:
 
 
-print len(df_rates)
+print((len(df_rates)))
 algos = ['RPC1', 'RPC2', 'RPC3', 'RPC4', 'DT1', 'DT2', 'DT3', 'DT4', 'DT5']
 df_rates_new = pd.DataFrame(columns=['run', 'group', 'board', 'wheel', 'sector', 'ls',                                     'lumi', 'errLumi', 'rate', 'err', 'system', 'station'])
 
@@ -823,7 +823,7 @@ for i in algos:
     #print temp.columns
     df_rates_new = pd.concat([df_rates_new, temp], ignore_index=True)
 
-print len(df_rates_new)
+print((len(df_rates_new)))
 
 
 # In[55]:
@@ -895,33 +895,33 @@ df_rates_new["CS"] = -1
 df_rates_new["errCS"] = -1
 
 df_rates_new["CS"] = df_rates_new["rate"]/df_rates_new["lumi"]
-print "Number of NaN's in CS before:"
-print len(df_rates_new["CS"][df_rates_new["CS"].isnull() == True])
-print "Number of Inf's in CS before:"
-print len(df_rates_new["CS"][np.isinf(df_rates_new["CS"])])
+print("Number of NaN's in CS before:")
+print((len(df_rates_new["CS"][df_rates_new["CS"].isnull() == True])))
+print("Number of Inf's in CS before:")
+print((len(df_rates_new["CS"][np.isinf(df_rates_new["CS"])])))
 
 df_rates_new["CS"] = df_rates_new["CS"].replace([np.inf, -np.inf], np.nan)
 df_rates_new["CS"] = df_rates_new["CS"].fillna(-1)
 
-print "Number of NaN's in CS after:"
-print len(df_rates_new["CS"][df_rates_new["CS"].isnull() == True])
-print "Number of Inf's in CS after:"
-print len(df_rates_new["CS"][np.isinf(df_rates_new["CS"])])
+print("Number of NaN's in CS after:")
+print((len(df_rates_new["CS"][df_rates_new["CS"].isnull() == True])))
+print("Number of Inf's in CS after:")
+print((len(df_rates_new["CS"][np.isinf(df_rates_new["CS"])])))
 
 df_rates_new["errCS"] = (1/df_rates_new["lumi"])*np.sqrt(df_rates_new["err"]**2 + df_rates_new["CS"]**2 * df_rates_new["errLumi"]**2)
 
-print "Number of NaN's in errCS before:"
-print len(df_rates_new["errCS"][df_rates_new["errCS"].isnull() == True])
-print "Number of Inf's in errCS before:"
-print len(df_rates_new["errCS"][np.isinf(df_rates_new["errCS"])])
+print("Number of NaN's in errCS before:")
+print((len(df_rates_new["errCS"][df_rates_new["errCS"].isnull() == True])))
+print("Number of Inf's in errCS before:")
+print((len(df_rates_new["errCS"][np.isinf(df_rates_new["errCS"])])))
 
 df_rates_new["errCS"] = df_rates_new["errCS"].replace([np.inf, -np.inf], np.nan)
 df_rates_new["errCS"] = df_rates_new["errCS"].fillna(-1)
 
-print "Number of NaN's in errCS after:"
-print len(df_rates_new["errCS"][df_rates_new["errCS"].isnull() == True])
-print "Number of Inf's in errCS after:"
-print len(df_rates_new["errCS"][np.isinf(df_rates_new["errCS"])])
+print("Number of NaN's in errCS after:")
+print((len(df_rates_new["errCS"][df_rates_new["errCS"].isnull() == True])))
+print("Number of Inf's in errCS after:")
+print((len(df_rates_new["errCS"][np.isinf(df_rates_new["errCS"])])))
 
 
 # In[61]:
@@ -933,8 +933,8 @@ array = df_rates_new.as_matrix(columns=['system', 'wheel', 'sector', 'station', 
 # In[62]:
 
 
-print len(array)
-print len(df_rates_new)
+print((len(array)))
+print((len(df_rates_new)))
 
 
 # In[63]:
@@ -968,9 +968,9 @@ df_rates_new = df_rates_new[rule == False]
 df_rates_new["ratio"] = 0
 for i in [-2, -1, 0, +1, +2]:
     for j in range(1, 13):
-        range_ = range(1, 5)
+        range_ = list(range(1, 5))
         if ((j == 4) | (j == 10)):
-            range_ = range(1, 6)
+            range_ = list(range(1, 6))
         for k in range_:
             rule = (df_rates_new.wheel == i) & (df_rates_new.sector == j) & (df_rates_new.station == k)
             rule_r = (ratio.wheel == i) & (ratio.sector == j) & (ratio.station == k)
@@ -989,7 +989,7 @@ for i in [-2, -1, 0, +1, +2]:
 
 
 df_rates_new_2 = df_rates_new.copy()
-print df_rates_new["content"].iloc[1]
+print((df_rates_new["content"].iloc[1]))
 
 
 # In[68]:
@@ -1015,7 +1015,7 @@ df_rates_new = df_rates_new[df_rates_new["system"] == 2]
 # In[70]:
 
 
-print df_rates_new["content"].iloc[1]
+print((df_rates_new["content"].iloc[1]))
 
 
 # In[71]:
@@ -1023,7 +1023,7 @@ print df_rates_new["content"].iloc[1]
 
 normalies = df_rates_new.copy()
 anomalies = df_rates_new.copy()
-print len(normalies), len(anomalies)
+print((len(normalies), len(anomalies)))
 
 
 # In[72]:
@@ -1040,12 +1040,12 @@ anomalies["averageLS"] = anomalies["group"].apply(deduceLS)
 
 
 rule = (normalies["wheel"] == -1) & (normalies["sector"] == 3) & (normalies["station"] == 3) 
-print "Normal chimney:"
-print normalies[rule]["content"].iloc[100]
+print("Normal chimney:")
+print((normalies[rule]["content"].iloc[100]))
 
 rule = (normalies["wheel"] == 1) & (normalies["sector"] == 4) & (normalies["station"] == 3)
-print "Anomalous chimney:"
-print normalies[rule]["content"].iloc[100]
+print("Anomalous chimney:")
+print((normalies[rule]["content"].iloc[100]))
 
 
 # In[74]:
@@ -1103,28 +1103,28 @@ def assignScore2(df, score, run, ls_in, ls_end, ls_string):
 
 
 rule = ((anomalies["wheel"] == 2) & (anomalies["sector"] == 3) & (anomalies["station"] == 1))
-print anomalies[rule]["score"].iloc[1]
+print((anomalies[rule]["score"].iloc[1]))
 temp = assignScore2(anomalies, 1, 302634, -1, -1, "group")
 anomalies = temp
 #temp = assignScore2(temp, 1, 302635, 1, 404, "group")
 #anomalies = temp
-print anomalies[rule]["score"].iloc[1]
+print((anomalies[rule]["score"].iloc[1]))
 
 
 # In[77]:
 
 
 rule = ((anomalies["wheel"] == 1) & (anomalies["sector"] == 3) & (anomalies["station"] == 1))
-print anomalies[rule]["score"].iloc[1]
+print((anomalies[rule]["score"].iloc[1]))
 
 
 # In[78]:
 
 
 rule = ((anomalies["wheel"] == 2) & (anomalies["sector"] == 4) & (anomalies["station"] == 5))
-print anomalies[rule]["score"].iloc[1]
+print((anomalies[rule]["score"].iloc[1]))
 rule = ((anomalies["wheel"] == -2) & (anomalies["sector"] == 4) & (anomalies["station"] == 5))
-print anomalies[rule]["score"].iloc[1]
+print((anomalies[rule]["score"].iloc[1]))
 
 
 # In[79]:
@@ -1140,10 +1140,10 @@ def change(data, red = 1):
     #print temp
     return temp
 
-print anomalies["content"].iloc[0]
+print((anomalies["content"].iloc[0]))
 anomalies["content_2"] = anomalies["content"].copy()
 anomalies["content_2"] = anomalies["content"].apply(change)
-print anomalies["content_2"].iloc[0]
+print((anomalies["content_2"].iloc[0]))
 
 
 # In[80]:
@@ -1208,9 +1208,9 @@ anomalies["content_scaled"] = anomalies["content"].apply(scale_data)
 
 #layers_test = anomalies.copy()
 layers_test = (anomalies[(anomalies.run == 302634) | (anomalies.run == 306125)]).copy()
-print "Tot:", len(layers_test)
-print "Normalies:", len(layers_test[layers_test.score == -1])
-print "Anomalies", len(layers_test[layers_test.score == 1])
+print(("Tot:", len(layers_test)))
+print(("Normalies:", len(layers_test[layers_test.score == -1])))
+print(("Anomalies", len(layers_test[layers_test.score == 1])))
 
 
 # In[83]:
@@ -1312,7 +1312,7 @@ def plot_confusion_matrix(cm, classes,
 
     fmt = '.2f' if normalize else 'd'
     thresh = cm.max() / 2.
-    for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
+    for i, j in itertools.product(list(range(cm.shape[0])), list(range(cm.shape[1]))):
         plt.text(j, i, format(cm[i, j], fmt),
                  horizontalalignment="center",
                  color="white" if cm[i, j] > thresh else "black")
@@ -1422,15 +1422,15 @@ def benchmark(y_true, y_score, treshold):
     sensitivity = round(float(tp)/(tp+fn), 4)
     specificity = round(float(tn)/(tn+fp), 4)
 
-    print("Model accuracy: %s" % round(accuracy_score(y_true, y_pred), 4))
-    print("Model sensitivity: %s" % sensitivity)
-    print("Model specificity: %s" % specificity)
+    print(("Model accuracy: %s" % round(accuracy_score(y_true, y_pred), 4)))
+    print(("Model sensitivity: %s" % sensitivity))
+    print(("Model specificity: %s" % specificity))
 
     return specificity, sensitivity
     
-print "DNN:"
+print("DNN:")
 specificity_ann, sensitivity_ann = benchmark(layers_test["score"], layers_test["ann_score_4"], 0.5)
-print "AE:"
+print("AE:")
 specificity_cae, sensitivity_cae = benchmark(layers_test["score"], layers_test["cae_score"], 0.055)
 
 
@@ -1582,13 +1582,13 @@ plot_confusion_matrix(cnf_matrix, classes=["normaly","anomaly"], normalize=True,
 # In[110]:
 
 
-print "Number of FPs for the DNN:", len(layers_test[(layers_test["score"] == -1) &                                                    (layers_test["ann_score_4"] > th_DNN)])
+print(("Number of FPs for the DNN:", len(layers_test[(layers_test["score"] == -1) &                                                    (layers_test["ann_score_4"] > th_DNN)])))
 
 
 # In[111]:
 
 
-print "Number of FPs for the AE:", len(layers_test[(layers_test["score"] == -1) &                                                   (layers_test["cae_score"] > th_AE)])
+print(("Number of FPs for the AE:", len(layers_test[(layers_test["score"] == -1) &                                                   (layers_test["cae_score"] > th_AE)])))
 
 
 # In[112]:
@@ -1613,8 +1613,8 @@ def count_fp(df, dis_nn, th, filt):
 num_fp_ann, fp_ann = count_fp(layers_test, "ann_score_4", th_DNN, False)
 num_fp_cae, fp_cae = count_fp(layers_test, "cae_score", th_AE, True)
 
-print "Number of chambers with false positives DNN:", num_fp_ann
-print "Number of chambers with false positives AE:", num_fp_cae
+print(("Number of chambers with false positives DNN:", num_fp_ann))
+print(("Number of chambers with false positives AE:", num_fp_cae))
 fp_cae.set_index("name",drop=True,inplace=True)
 fp_ann.set_index("name",drop=True,inplace=True)
 
@@ -1802,10 +1802,10 @@ plot_scatter(layers_test[rule], 302634, +2, 100, -1)
 # In[124]:
 
 
-print "ANOMALIES: NOT SELECTED WITH AE"
+print("ANOMALIES: NOT SELECTED WITH AE")
 rule = (layers_test["score"] == 1) & (layers_test[dis_nn] < th_AE)
 plot_scatter(layers_test[rule], 302634, -2, 100, -1)
-print "ANOMALIES: SELECTED WITH AE"
+print("ANOMALIES: SELECTED WITH AE")
 rule = (layers_test["score"] == 1) & (layers_test[dis_nn] > th_AE)
 plot_scatter(layers_test[rule], 302634, -2, 100, -1)
 
@@ -1813,10 +1813,10 @@ plot_scatter(layers_test[rule], 302634, -2, 100, -1)
 # In[125]:
 
 
-print "ANOMALIES: NOT SELECTED WITH AE"
+print("ANOMALIES: NOT SELECTED WITH AE")
 rule = (layers_test["score"] == 1) & (layers_test[dis_nn] < th_AE)
 plot_scatter(layers_test[rule], 302634, -1, 100, -1)
-print "ANOMALIES: SELECTED WITH AE"
+print("ANOMALIES: SELECTED WITH AE")
 rule = (layers_test["score"] == 1) & (layers_test[dis_nn] > th_AE)
 plot_scatter(layers_test[rule], 302634, -1, 100, -1)
 
@@ -1824,10 +1824,10 @@ plot_scatter(layers_test[rule], 302634, -1, 100, -1)
 # In[126]:
 
 
-print "ANOMALIES: NOT SELECTED WITH AE"
+print("ANOMALIES: NOT SELECTED WITH AE")
 rule = (layers_test["score"] == 1) & (layers_test[dis_nn] < th_AE)
 plot_scatter(layers_test[rule], 302634, 0, 100, -1)
-print "ANOMALIES: SELECTED WITH AE"
+print("ANOMALIES: SELECTED WITH AE")
 rule = (layers_test["score"] == 1) & (layers_test[dis_nn] > th_AE)
 plot_scatter(layers_test[rule], 302634, 0, 100, -1)
 
@@ -1835,10 +1835,10 @@ plot_scatter(layers_test[rule], 302634, 0, 100, -1)
 # In[127]:
 
 
-print "ANOMALIES: NOT SELECTED WITH AE"
+print("ANOMALIES: NOT SELECTED WITH AE")
 rule = (layers_test["score"] == 1) & (layers_test[dis_nn] < th_AE)
 plot_scatter(layers_test[rule], 302634, +1, 100, -1)
-print "ANOMALIES: SELECTED WITH AE"
+print("ANOMALIES: SELECTED WITH AE")
 rule = (layers_test["score"] == 1) & (layers_test[dis_nn] > th_AE)
 plot_scatter(layers_test[rule], 302634, +1, 100, -1)
 
@@ -1846,10 +1846,10 @@ plot_scatter(layers_test[rule], 302634, +1, 100, -1)
 # In[128]:
 
 
-print "ANOMALIES: NOT SELECTED WITH AE"
+print("ANOMALIES: NOT SELECTED WITH AE")
 rule = (layers_test["score"] == 1) & (layers_test[dis_nn] < th_AE)
 plot_scatter(layers_test[rule], 302634, +2, 100, -1)
-print "ANOMALIES: SELECTED WITH AE"
+print("ANOMALIES: SELECTED WITH AE")
 rule = (layers_test["score"] == 1) & (layers_test[dis_nn] > th_AE)
 plot_scatter(layers_test[rule], 302634, +2, 100, -1)
 
@@ -1950,7 +1950,7 @@ print("Done.")
 # In[172]:
 
 
-print factors[(factors.wheel == +2) & (factors.sector == 10) & (factors.station == 3)]
+print((factors[(factors.wheel == +2) & (factors.sector == 10) & (factors.station == 3)]))
 
 
 # In[144]:
@@ -2014,8 +2014,8 @@ layers_test["content_red_scaled"] = layers_test["content_red"].apply(scale_data,
 # In[147]:
 
 
-print layers_test["content_red"].iloc[100]
-print layers_test["content_red_scaled"].iloc[100]
+print((layers_test["content_red"].iloc[100]))
+print((layers_test["content_red_scaled"].iloc[100]))
 
 
 # In[148]:
@@ -2207,10 +2207,10 @@ plot_scatter(reduced_anom[rule], 302634, +2, 70, -1)
 # In[161]:
 
 
-print "ANOMALIES: NOT SELECTED WITH KMeans"
+print("ANOMALIES: NOT SELECTED WITH KMeans")
 rule = (reduced_anom["score"] == 1) & (reduced_anom[dis_nn] < th_km)
 plot_scatter(reduced_anom[rule], 302634, -2, 100, -1)
-print "ANOMALIES: SELECTED WITH KMeans"
+print("ANOMALIES: SELECTED WITH KMeans")
 rule = (reduced_anom["score"] == 1) & (reduced_anom[dis_nn] > th_km)
 plot_scatter(reduced_anom[rule], 302634, -2, 100, -1)
 
@@ -2218,10 +2218,10 @@ plot_scatter(reduced_anom[rule], 302634, -2, 100, -1)
 # In[162]:
 
 
-print "ANOMALIES: NOT SELECTED WITH KMeans"
+print("ANOMALIES: NOT SELECTED WITH KMeans")
 rule = (reduced_anom["score"] == 1) & (reduced_anom[dis_nn] < th_km)
 plot_scatter(reduced_anom[rule], 302634, -1, 100, -1)
-print "ANOMALIES: SELECTED WITH KMeans"
+print("ANOMALIES: SELECTED WITH KMeans")
 rule = (reduced_anom["score"] == 1) & (reduced_anom[dis_nn] > th_km)
 plot_scatter(reduced_anom[rule], 302634, -1, 100, -1)
 
@@ -2229,10 +2229,10 @@ plot_scatter(reduced_anom[rule], 302634, -1, 100, -1)
 # In[163]:
 
 
-print "ANOMALIES: NOT SELECTED WITH KMeans"
+print("ANOMALIES: NOT SELECTED WITH KMeans")
 rule = (reduced_anom["score"] == 1) & (reduced_anom[dis_nn] < th_km)
 plot_scatter(reduced_anom[rule], 302634, 0, 100, -1)
-print "ANOMALIES: SELECTED WITH KMeans"
+print("ANOMALIES: SELECTED WITH KMeans")
 rule = (reduced_anom["score"] == 1) & (reduced_anom[dis_nn] > th_km)
 plot_scatter(reduced_anom[rule], 302634, 0, 100, -1)
 
@@ -2240,10 +2240,10 @@ plot_scatter(reduced_anom[rule], 302634, 0, 100, -1)
 # In[164]:
 
 
-print "ANOMALIES: NOT SELECTED WITH KMeans"
+print("ANOMALIES: NOT SELECTED WITH KMeans")
 rule = (reduced_anom["score"] == 1) & (reduced_anom[dis_nn] < th_km)
 plot_scatter(reduced_anom[rule], 302634, +1, 100, -1)
-print "ANOMALIES: SELECTED WITH KMeans"
+print("ANOMALIES: SELECTED WITH KMeans")
 rule = (reduced_anom["score"] == 1) & (reduced_anom[dis_nn] > th_km)
 plot_scatter(reduced_anom[rule], 302634, +1, 100, -1)
 
@@ -2251,10 +2251,10 @@ plot_scatter(reduced_anom[rule], 302634, +1, 100, -1)
 # In[165]:
 
 
-print "ANOMALIES: NOT SELECTED WITH KMeans"
+print("ANOMALIES: NOT SELECTED WITH KMeans")
 rule = (reduced_anom["score"] == 1) & (reduced_anom[dis_nn] < th_km)
 plot_scatter(reduced_anom[rule], 302634, +2, 100, -1)
-print "ANOMALIES: SELECTED WITH KMeans"
+print("ANOMALIES: SELECTED WITH KMeans")
 rule = (reduced_anom["score"] == 1) & (reduced_anom[dis_nn] > th_km)
 plot_scatter(reduced_anom[rule], 302634, +2, 100, -1)
 
