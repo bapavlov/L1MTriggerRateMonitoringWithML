@@ -16,6 +16,7 @@ import pandas as pd
 import tensorflow as tf
 
 import matplotlib
+matplotlib.use('PDF')
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from mpl_toolkits.axes_grid1 import make_axes_locatable
@@ -39,12 +40,12 @@ from sklearn.model_selection import cross_val_score, train_test_split,Stratified
 from sklearn.preprocessing import MaxAbsScaler
 from sklearn.neighbors import LocalOutlierFactor
 
-
+import itertools
 # In[2]:
 
 
 # Change presentation settings
-get_ipython().run_line_magic('matplotlib', 'inline')
+#get_ipython().run_line_magic('matplotlib', 'inline')
 
 matplotlib.rcParams["figure.figsize"] = (15.0, 8.0)
 matplotlib.rcParams["xtick.labelsize"] = 16
@@ -57,6 +58,12 @@ matplotlib.rcParams["axes.titlesize"] = 16
 matplotlib.rcParams["figure.titlesize"] = 16
 matplotlib.rcParams["axes.labelsize"] = 14
 matplotlib.rcParams["legend.fontsize"] = 14
+
+def save_plot(plot):
+    save_plot.counter +=1
+    plot.savefig(str(save_plot.counter))
+    plot.show()
+save_plot.counter = 0
 
 
 # In[3]:
@@ -234,7 +241,7 @@ def plot_inst_lumi(x_val, y_val, z_val, title):
     plt.plot(x_val, z_val, 'bo-')
     plt.title(title)
     plt.legend(loc="best")
-    plt.show();
+    save_plot(plt);
 
 
 # In[16]:
@@ -318,7 +325,7 @@ def plot_rate_vs_time(df, x_val, y_val, z_val, title):
     plt.plot(df_temp[x_val], df_temp[y_val], 'ro-')
     plt.title(title)
     plt.legend(loc="best")
-    plt.show();
+    save_plot(plt);
 
 plot_rate_vs_time(df_rates[df_rates.run == 302634], "time", "DT1",                  "YB+1_S4", "Rates for Runs / Fill / Board: %s / %s / %s" %                   ("302634", int_lumi2["fill"].iloc[2], "YB+1_S4"))
 
@@ -341,7 +348,7 @@ rule = (df_rates.run == 302634) & (df_rates.board == "YB+1_S3")
 plt.plot(df_rates[rule]["time"], df_rates[rule]["DT1"], 'bo-')
 plt.title("")
 plt.legend(loc='best')
-plt.show()
+save_plot(plt)
 
 
 # Associating a LS and an instantaneous luminosity to each rate:
@@ -499,7 +506,7 @@ rule = (df_rates.run == 302634) & (df_rates.board == "YB+1_S3")
 plt.plot(df_rates[rule]["ls"], df_rates[rule]["DT1"], 'bo-')
 plt.title("")
 plt.legend(loc='best')
-plt.show()
+save_plot(plt)
 
 
 # In[36]:
@@ -662,7 +669,7 @@ def plot_ratio_vs_ls(df, run, x_val, y_val, z_val, x_err, y_err, title_x, title_
     a, b, c = inter[0], inter[1], 1-inter[0]/inter[1]
     plt.legend(loc="best")
     plt.title(title)
-    plt.show()
+    save_plot(plt)
     return float(a), float(b), float(c)
 
 
@@ -735,7 +742,7 @@ def plot_ratio_vs_ls_2(df, run, x_val, y_val, z_val, x_err, y_err, title_x, titl
     plt.title(title)
     plt.axhline(a1, color='r', linestyle='dashed', linewidth=1)
     plt.axhline(a2, color='b', linestyle='dashed', linewidth=1)
-    plt.show()
+    save_plot(plt)
 
 title = "Fill/Run: "+str(int_lumi2["fill"].iloc[0])+"/"+str("306125")
 plot_ratio_vs_ls_2(df_rates, 306125, "lumi", "DT3", ["YB+1_S4", "YB-1_S3"], 0,                            "errDT3", r"Inst. Lumi. [$\times10^{30}$ Hz/cm$^2$]", 
@@ -760,7 +767,7 @@ plt.legend(loc='best')
 plt.ylabel('Frequency')
 plt.xlabel('Decrease in CS (w.r.t. 306125)')
 plt.axvline(value, color='k', linestyle='dashed', linewidth=1)
-plt.show()
+save_plot(plt)
 
 
 # In[52]:
@@ -792,7 +799,7 @@ plt.legend(loc='best')
 plt.ylabel('Frequency')
 plt.xlabel(r'Cross-section [$\times 10^{30}$ cm$^{2}$]')
 plt.axvline(1.0, color='k', linestyle='dashed', linewidth=1)
-plt.show()
+save_plot(plt)
 
 
 # Create a new dataframe with the input features already organized in a numpy array:
@@ -843,7 +850,7 @@ def plot_rate_vs_ls(df, run, x_val, y_val, z_val, x_err, y_err, title_x, title_y
         plt.errorbar(df_temp[rule][x_val], df_temp[rule][y_val], xerr=x_err,                     yerr=df_temp[rule][y_err], fmt=opt, ecolor='r')
     plt.legend(loc="best")
     plt.title(title)
-    plt.show()
+    save_plot(plt)
 
 
 # In[56]:
@@ -871,7 +878,7 @@ def plot_vs_ls(df, run, x_val, y_val, z_val, x_err, y_err, title_x, title_y, tit
         plt.errorbar(df_temp[rule][x_val], df_temp[rule]["lumi"], xerr=x_err, yerr=df_temp[rule]["errLumi"],                     fmt='bo', ecolor='b')
     plt.legend(loc="best")
     plt.title(title)
-    plt.show()
+    save_plot(plt)
 
 
 # In[58]:
@@ -1280,13 +1287,13 @@ plt.legend(loc='best')
 plt.ylabel('Frequency')
 plt.xlabel('Score')
 plt.axvline(0.5, color='k', linestyle='dashed', linewidth=1)
-plt.show()
+save_plot(plt)
 
 
 # In[88]:
 
 
-import itertools
+
 def plot_confusion_matrix(cm, classes,
                           normalize=False,
                           title='Confusion matrix',
@@ -1363,7 +1370,7 @@ def plotFpVsLs(run, wheel, sector, station, title, df, algo, threshold, log, bou
     plt.xlabel('LS')
     plt.grid(True)
     #plt.plot([bound, bound], [0, 100], color='r', linestyle='--', linewidth=2)
-    plt.show()
+    save_plot(plt)
     return n
 
 
@@ -1458,7 +1465,7 @@ def get_roc_curve(test_df, models, working_point=None):
     plt.legend(loc='best')
     plt.ylabel('True positive rate')
     plt.xlabel('False positive rate')
-    plt.show();
+    save_plot(plt);
 
 
 # In[99]:
@@ -1490,7 +1497,7 @@ plt.legend(loc='best')
 plt.ylabel('Frequency')
 plt.xlabel('Score')
 plt.axvline(0.5, color='k', linestyle='dashed', linewidth=1)
-plt.show()
+save_plot(plt)
 
 
 # In[101]:
@@ -1511,7 +1518,7 @@ plt.legend(loc='best')
 plt.ylabel('Frequency')
 plt.xlabel('Score')
 plt.axvline(0.02, color='k', linestyle='dashed', linewidth=1)
-plt.show()
+save_plot(plt)
 
 
 # In[102]:
@@ -1529,7 +1536,7 @@ plt.legend(loc='best')
 plt.ylabel('Frequency')
 plt.xlabel('Score')
 plt.axvline(0.02, color='k', linestyle='dashed', linewidth=1)
-plt.show()
+save_plot(plt)
 
 
 # In[103]:
@@ -1550,7 +1557,7 @@ plt.legend(loc='best')
 plt.ylabel('Frequency')
 plt.xlabel('Score')
 plt.axvline(0.02, color='k', linestyle='dashed', linewidth=1)
-plt.show()
+save_plot(plt)
 
 
 # In[108]:
@@ -1692,7 +1699,7 @@ def plot_scatter(df, run, wheel, ls_min, ls_max):
     plt.colorbar(im, cax=cax, ticks=[np.min(np.nan_to_num(mat)), np.max(np.nan_to_num(mat))])
     title = "Run: "+run_s+", Wheel: "+wheel_s+", LS: "+ls_s
     plt.title(title, loc="right")   
-    plt.show()
+    save_plot(plt)
 
 
 # In[118]:
@@ -1740,7 +1747,7 @@ def plot_scatter_2(df, arg, wheel):
     plt.colorbar(im, cax=cax, ticks=[np.min(np.nan_to_num(mat)), np.max(np.nan_to_num(mat))])
     title = "Wheel: "+wheel_s
     plt.title(title, loc="right")   
-    plt.show()
+    save_plot(plt)
 
 
 # Decrease in rate per station and sector in each wheel:
@@ -1895,7 +1902,7 @@ plt.title("Distribution of scores: LOF (302634 + 306125)")
 plt.legend(loc='best')
 plt.ylabel('Frequency')
 plt.xlabel('Score')
-plt.show()
+save_plot(plt)
 
 
 # In[140]:
@@ -2077,7 +2084,7 @@ def plot_scatter_3(df, arg, wheel):
     plt.colorbar(im, cax=cax, ticks=[np.min(np.nan_to_num(mat)), np.max(np.nan_to_num(mat))])
     title = "Wheel: "+wheel_s
     plt.title(title, loc="right")   
-    plt.show()
+    save_plot(plt)
 
 
 # In[174]:
@@ -2152,7 +2159,7 @@ plt.title("K-Means average distance distribution (302634)")
 plt.legend(loc='best')
 plt.ylabel('Frequency')
 plt.xlabel('Distance to the closest cluster')
-plt.show()
+save_plot(plt)
 
 
 # In[157]:
@@ -2291,7 +2298,7 @@ plt.legend(loc='best')
 plt.ylabel('Frequency')
 plt.xlabel('Score')
 plt.axvline(0.0, color='k', linestyle='dashed', linewidth=1)
-plt.show()
+save_plot(plt)
 
 
 # In[169]:
